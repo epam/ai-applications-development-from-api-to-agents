@@ -62,13 +62,17 @@ end, when you do use frameworks, you'll understand exactly what's happening unde
 
 ## Getting Started
 
-### 1. Create a virtual environment
+### 0. ⭐️ **Star the repository** - it will help us grow ⭐️
+
+### 1. ⑃ Fork and clone the repository
+
+### 2. Create a virtual environment
 
 ```bash
 python -m venv .venv
 ```
 
-### 2. Activate the virtual environment
+### 3. Activate the virtual environment
 
 **macOS / Linux:**
 
@@ -82,7 +86,7 @@ source .venv/bin/activate
 .venv\Scripts\activate
 ```
 
-### 3. Install dependencies
+### 4. Install dependencies
 
 ```bash
 pip install -r requirements.txt
