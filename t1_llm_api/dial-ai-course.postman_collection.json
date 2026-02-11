@@ -1,0 +1,236 @@
+{
+  "info": {
+    "_postman_id": "4cb88cc2-1d34-4661-975c-74c626bbd1e7",
+    "name": "dial-ai-course",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "13054272"
+  },
+  "item": [
+    {
+      "name": "1. LLMs API collection",
+      "item": [
+        {
+          "name": "openai",
+          "item": [
+            {
+              "name": "GPT-5.2 chat/completions",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{OPENAI_API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"hi\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"Ahoy there, matey! What be yer business on these seas today?\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"what can you do?\"\n        }\n    ],\n    \"model\": \"gpt-5.2\",\n    \"stream\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.openai.com/v1/chat/completions",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "openai",
+                    "com"
+                  ],
+                  "path": [
+                    "v1",
+                    "chat",
+                    "completions"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GPT-5.2 responses",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{OPENAI_API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"instructions\": \"Behave as a pirate!\",\n    \"input\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"hi\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"Ahoy there, matey! What be yer business on these seas today?\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"what can you do?\"\n        }\n    ],\n    \"model\": \"gpt-5.2\",\n    \"stream\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.openai.com/v1/responses",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "openai",
+                    "com"
+                  ],
+                  "path": [
+                    "v1",
+                    "responses"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "anthropic",
+          "item": [
+            {
+              "name": "sonnet-4.5",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "x-api-key",
+                    "value": "{{ANTHROPIC_API_KEY}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "anthropic-version",
+                    "value": "2023-06-01",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"system\": \"Behave as a pirate!\",\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"hi\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"Ahoy there, matey! What be yer business on these seas today?\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"what can you do?\"\n        }\n    ],\n    \"model\": \"claude-sonnet-4-5\",\n    \"max_tokens\": 1024,\n    \"stream\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.anthropic.com/v1/messages",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "anthropic",
+                    "com"
+                  ],
+                  "path": [
+                    "v1",
+                    "messages"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "gemini",
+          "item": [
+            {
+              "name": "gemini-3-flash",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "x-goog-api-key",
+                    "value": "{{GEMINI_API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"system_instruction\": {\n        \"parts\": [\n            {\n                \"text\": \"Behave as a pirate!\"\n            }\n        ]\n    },\n    \"contents\": [\n        {\n            \"role\": \"user\",\n            \"parts\": [\n                {\n                    \"text\": \"hi\"\n                }\n            ]\n        },\n        {\n            \"role\": \"model\",\n            \"parts\": [\n                {\n                    \"text\": \"Ahoy there, matey! What be yer business on these seas today?\"\n                }\n            ]\n        },\n        {\n            \"role\": \"user\",\n            \"parts\": [\n                {\n                    \"text\": \"what can you do?\"\n                }\n            ]\n        }\n    ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent",
+                  "protocol": "https",
+                  "host": [
+                    "generativelanguage",
+                    "googleapis",
+                    "com"
+                  ],
+                  "path": [
+                    "v1beta",
+                    "models",
+                    "gemini-3-flash-preview:generateContent"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "gemini-3-flash Streaming",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "x-goog-api-key",
+                    "value": "{{GEMINI_API_KEY}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"system_instruction\": {\n        \"parts\": [\n            {\n                \"text\": \"Behave as a pirate!\"\n            }\n        ]\n    },\n    \"contents\": [\n        {\n            \"role\": \"user\",\n            \"parts\": [\n                {\n                    \"text\": \"hi\"\n                }\n            ]\n        },\n        {\n            \"role\": \"model\",\n            \"parts\": [\n                {\n                    \"text\": \"Ahoy there, matey! What be yer business on these seas today?\"\n                }\n            ]\n        },\n        {\n            \"role\": \"user\",\n            \"parts\": [\n                {\n                    \"text\": \"what can you do?\"\n                }\n            ]\n        }\n    ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:streamGenerateContent?alt=sse",
+                  "protocol": "https",
+                  "host": [
+                    "generativelanguage",
+                    "googleapis",
+                    "com"
+                  ],
+                  "path": [
+                    "v1beta",
+                    "models",
+                    "gemini-3-flash-preview:streamGenerateContent"
+                  ],
+                  "query": [
+                    {
+                      "key": "alt",
+                      "value": "sse"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
