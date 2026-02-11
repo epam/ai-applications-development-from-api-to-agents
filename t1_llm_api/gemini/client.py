@@ -46,7 +46,7 @@ class GeminiAIClient(AIClient):
         """
         contents = []
         for msg in messages:
-            role = "model" if msg.role == Role.ASSISTANT else "user"
+            role = msg.role
             contents.append(
                 types.Content(
                     role=role,
