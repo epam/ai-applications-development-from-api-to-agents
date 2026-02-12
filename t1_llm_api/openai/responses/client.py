@@ -29,9 +29,12 @@ class OpenAIResponsesClient(BaseOpenAIClient):
             system_prompt (str): The instruction to guide the model's behavior.
             api_key (str): The OpenAI API key for authentication.
         """
-        super().__init__(endpoint, model_name, system_prompt, api_key)
-        self._client = OpenAI(api_key=api_key)
-        self._async_client = AsyncOpenAI(api_key=api_key)
+        #TODO:
+        # https://github.com/openai/openai-python?tab=readme-ov-file#usage
+        # 1. Call to __init__ of super class
+        # 2. Initialize OpenAI client: `self._client = OpenAI(api_key=api_key)`
+        # 3. Initialize AsyncOpenAI client: `self._async_client = AsyncOpenAI(api_key=api_key)`
+        raise NotImplementedError
 
     def response(self, messages: list[Message], **kwargs) -> Message:
         """
@@ -48,17 +51,19 @@ class OpenAIResponsesClient(BaseOpenAIClient):
             Uses the Responses API format with 'instructions' and 'input' parameters.
             The response is printed to stdout before being returned.
         """
-        input_messages = [message.to_dict() for message in messages]
-
-        response = self._client.responses.create(
-            model=self._model_name,
-            instructions=self._system_prompt,
-            input=input_messages
-        )
-
-        content = response.output_text
-        print(content)
-        return Message(role=Role.ASSISTANT, content=content)
+        #TODO:
+        # https://developers.openai.com/api/docs/guides/text?lang=python
+        # 0. Make a request in Postman to see the request and response
+        # 1. Prepare input messages list: `input_messages = [message.to_dict() for message in messages]`
+        # 2. Create response using OpenAI client:
+        #   - call `self._client.responses.create()` with:
+        #     - model=self._model_name
+        #     - instructions=self._system_prompt
+        #     - input=input_messages
+        # 3. Extract content from response: `content = response.output_text`
+        # 4. Print content
+        # 5. Return ASSISTANT message
+        raise NotImplementedError
 
     async def stream_response(self, messages: list[Message], **kwargs) -> Message:
         """
@@ -78,19 +83,20 @@ class OpenAIResponsesClient(BaseOpenAIClient):
             Uses the Responses API streaming format with event types.
             Listens for 'response.output_text.delta' events to build the response.
         """
-        input_messages = [message.to_dict() for message in messages]
-
-        contents = []
-
-        async with self._async_client.responses.stream(
-                model=self._model_name,
-                instructions=self._system_prompt,
-                input=input_messages
-        ) as stream:
-            async for event in stream:
-                if event.type == "response.output_text.delta":
-                    contents.append(event.delta)
-                    print(event.delta, end='')
-
-        print()
-        return Message(role=Role.ASSISTANT, content="".join(contents))
+        #TODO:
+        # https://developers.openai.com/api/docs/guides/text?lang=python
+        # 0. Make a request in Postman to see the request and response
+        # 1. Prepare input messages list: `input_messages = [message.to_dict() for message in messages]`
+        # 2. Initialize empty contents list to collect streamed chunks
+        # 3. Create streaming response using AsyncOpenAI client:
+        #   - use `async with self._async_client.responses.stream()` with:
+        #     - model=self._model_name
+        #     - instructions=self._system_prompt
+        #     - input=input_messages
+        # 4. Iterate through stream events using `async for event in stream:`
+        # 5. For each event, check if event type is "response.output_text.delta":
+        #   - append event.delta to contents list
+        #   - print event.delta without newline (end='')
+        # 6. Print empty line (for formatting)
+        # 7. Return ASSISTANT message with joined contents: `Message(role=Role.ASSISTANT, content="".join(contents))`
+        raise NotImplementedError

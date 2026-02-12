@@ -28,8 +28,11 @@ class GeminiAIClient(AIClient):
             api_key (str): The Google API key for authentication.
             system_prompt (str): The system instruction to guide the model's behavior.
         """
-        super().__init__(endpoint, model_name, api_key, system_prompt)
-        self._client = genai.Client(api_key=api_key)
+        #TODO:
+        # https://ai.google.dev/gemini-api/docs/text-generation#python_4
+        # 1. Call to __init__ of super class
+        # 2. Add self._client = genai.Client(api_key=api_key)
+        raise NotImplementedError
 
     def _to_gemini_contents(self, messages: list[Message]) -> list[types.Content]:
         """
@@ -70,18 +73,20 @@ class GeminiAIClient(AIClient):
             Gemini uses 'system_instruction' parameter for system-level guidance.
             The response is printed to stdout before being returned.
         """
-        response = self._client.models.generate_content(
-            model=self._model_name,
-            contents=self._to_gemini_contents(messages),
-            config=types.GenerateContentConfig(
-                system_instruction=self._system_prompt,
-                max_output_tokens=kwargs.get("max_tokens", 1024),
-            ),
-        )
-
-        content = response.text
-        print(content)
-        return Message(role=Role.ASSISTANT, content=content)
+        #TODO:
+        # https://ai.google.dev/gemini-api/docs/text-generation#python_4
+        # 0. Make a request in Postman to see the request and response
+        # 1. Call client, use `self._client.models.generate_content` with such params:
+        #   - model=self._model_name
+        #   - contents=self._to_gemini_contents(messages)
+        #   - config=types.GenerateContentConfig(
+        #       system_instruction=self._system_prompt,
+        #       max_output_tokens=kwargs.get("max_tokens", 1024),
+        #     )
+        # 2. Get content from response: `content = response.text`
+        # 3. Print content to console
+        # 4. Return ASSISTANT message (role assistant, content is generated content)
+        raise NotImplementedError
 
     async def stream_response(self, messages: list[Message], **kwargs) -> Message:
         """
@@ -101,19 +106,21 @@ class GeminiAIClient(AIClient):
             Uses the async streaming interface provided by the Gemini SDK.
             Each chunk's text is printed to stdout as it arrives.
         """
-        content = []
-
-        async for chunk in await self._client.aio.models.generate_content_stream(
-                model=self._model_name,
-                contents=self._to_gemini_contents(messages),
-                config=types.GenerateContentConfig(
-                    system_instruction=self._system_prompt,
-                    max_output_tokens=kwargs.get("max_tokens", 1024),
-                ),
-        ):
-            if chunk.text:
-                content.append(chunk.text)
-                print(chunk.text, end='')
-
-        print()
-        return Message(role=Role.ASSISTANT, content="".join(content))
+        #TODO:
+        # https://ai.google.dev/gemini-api/docs/text-generation#python_4
+        # 0. Make a request in Postman to see the request and response
+        # 1. Initialize empty content list to collect streamed chunks
+        # 2. Call client, use `await self._client.aio.models.generate_content_stream` with such params:
+        #   - model=self._model_name
+        #   - contents=self._to_gemini_contents(messages)
+        #   - config=types.GenerateContentConfig(
+        #       system_instruction=self._system_prompt,
+        #       max_output_tokens=kwargs.get("max_tokens", 1024),
+        #     )
+        # 3. Iterate through chunks in generated stream (async for chunk in await ...):
+        #   - if chunk.text is not empty:
+        #       - append chunk.text to content list
+        #       - print chunk text to console `print(chunk.text, end='')`
+        # 4. Print empty row
+        # 5. Return ASSISTANT message (role assistant, content is joined content list)
+        raise NotImplementedError

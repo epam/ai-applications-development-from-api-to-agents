@@ -21,22 +21,15 @@ async def start(stream: bool, client: AIClient) -> None:
                       If False, use synchronous responses (complete response at once).
         client (AIClient): The AI client instance to use for generating responses.
     """
-    conversation = Conversation()
-
-    print("Type your question or 'exit' to quit.")
-    while True:
-        user_input = input("➡️ ").strip()
-
-        if user_input.lower() == "exit":
-            print("Exiting the chat. Goodbye!")
-            break
-
-        conversation.add_message(Message(Role.USER, user_input))
-
-        print("🤖: ", end="")
-        if stream:
-            ai_message = await client.stream_response(conversation.get_messages())
-        else:
-            ai_message = client.response(conversation.get_messages())
-
-        conversation.add_message(ai_message)
+    #TODO:
+    # Main chat loop that handles user interaction with AI clients.
+    # 1. Create a new Conversation object to maintain chat history
+    # 2. Print to console: `Type your question or 'exit' to quit.`
+    # 3. Create infinite `while` loop
+    # 4. Get user input from console, use `input` method
+    # 5. If user_input is `exit` then `break` the loop
+    # 6. Add user message to conversation (role is "user", content is user_input)
+    # 7.1. If `stream` is true than call `client.stream_completion` with messages (it's async, don't forget to await)
+    # 7.2. Otherwise call `client.get_completion` with messages
+    # 7.3. Get Assistant message and add it to the conversation
+    raise NotImplementedError

@@ -29,14 +29,13 @@ class CustomGeminiAIClient(AIClient):
         Returns:
             list[dict]: Messages in Gemini's dictionary format.
         """
-        contents = []
-        for msg in messages:
-            role = msg.role
-            contents.append({
-                "role": role,
-                "parts": [{"text": msg.content}]
-            })
-        return contents
+        #TODO:
+        # 1. Initialize empty contents list
+        # 2. Iterate through messages:
+        #   - get role from message: `role = msg.role`
+        #   - append dict to contents: `{"role": role, "parts": [{"text": msg.content}]}`
+        # 3. Return contents list
+        raise NotImplementedError
 
     def response(self, messages: list[Message], **kwargs) -> Message:
         """
@@ -58,33 +57,29 @@ class CustomGeminiAIClient(AIClient):
             Uses 'x-goog-api-key' header for authentication.
             Response candidates contain content parts that are concatenated.
         """
-        url = f"{self._endpoint}/{self._model_name}:generateContent"
-        headers = {
-            "Content-Type": "application/json",
-            "x-goog-api-key": self._api_key
-        }
-
-        request_data = {
-            "system_instruction": {"parts": [{"text": self._system_prompt}]},
-            "contents": self._to_gemini_contents(messages),
-            "generationConfig": {
-                "maxOutputTokens": kwargs.get("max_tokens", 1024)
-            }
-        }
-
-        response = requests.post(url=url, headers=headers, json=request_data)
-
-        if response.status_code == 200:
-            data = response.json()
-            candidates = data.get("candidates", [])
-            if candidates:
-                parts = candidates[0].get("content", {}).get("parts", [])
-                content = "".join(part.get("text", "") for part in parts)
-                print(content)
-                return Message(Role.ASSISTANT, content)
-            raise ValueError("No candidates present in the response")
-        else:
-            raise Exception(f"HTTP {response.status_code}: {response.text}")
+        #TODO:
+        # https://ai.google.dev/gemini-api/docs/text-generation
+        # 0. Make a request in Postman to see the request and response
+        # 1. Construct URL: `url = f"{self._endpoint}/{self._model_name}:generateContent"`
+        # 2. Prepare headers dict with:
+        #   - "Content-Type" ("application/json")
+        #   - "x-goog-api-key" (self api key)
+        # 3. Prepare request data dict:
+        #   - "system_instruction" ({"parts": [{"text": self._system_prompt}]})
+        #   - "contents" (self._to_gemini_contents(messages))
+        #   - "generationConfig" ({"maxOutputTokens": kwargs.get("max_tokens", 1024)})
+        # 4. Execute post request to AI API `requests.post(url=url, headers=headers, json=request_data)`
+        # 5.1. If response status code is 200 then:
+        #   - get response json
+        #   - get candidates: `candidates = data.get("candidates", [])`
+        #   - if candidates are present:
+        #       - get parts: `parts = candidates[0].get("content", {}).get("parts", [])`
+        #       - get content: `"".join(part.get("text", "") for part in parts)`
+        #       - print content
+        #       - return ASSISTANT message (role assistant, content is generated content)
+        #   - raise ValueError("No candidates present in the response")
+        # 5.2. Otherwise raise Exception(f"HTTP {response.status_code}: {response.text}")
+        raise NotImplementedError
 
     async def stream_response(self, messages: list[Message], **kwargs) -> Message:
         """
@@ -106,40 +101,37 @@ class CustomGeminiAIClient(AIClient):
             Each SSE chunk contains candidates with content parts.
             Each text chunk is printed to stdout as it arrives.
         """
-        url = f"{self._endpoint}/{self._model_name}:streamGenerateContent?alt=sse"
-        headers = {
-            "Content-Type": "application/json",
-            "x-goog-api-key": self._api_key
-        }
-
-        request_data = {
-            "system_instruction": {"parts": [{"text": self._system_prompt}]},
-            "contents": self._to_gemini_contents(messages),
-            "generationConfig": {
-                "maxOutputTokens": kwargs.get("max_tokens", 1024)
-            }
-        }
-        contents = []
-
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url=url, headers=headers, json=request_data) as response:
-                if response.status == 200:
-                    async for line in response.content:
-                        line_str = line.decode('utf-8').strip()
-                        if line_str.startswith("data: "):
-                            data = line_str[6:].strip()
-                            parsed_data = json.loads(data)
-                            candidates = parsed_data.get("candidates", [])
-                            if candidates:
-                                parts = candidates[0].get("content", {}).get("parts", [])
-                                for part in parts:
-                                    text_content = part.get("text", "")
-                                    if text_content:
-                                        print(text_content, end='')
-                                        contents.append(text_content)
-                else:
-                    error_text = await response.text()
-                    print(f"{response.status} {error_text}")
-
-                print()
-                return Message(role=Role.ASSISTANT, content=''.join(contents))
+        #TODO:
+        # https://ai.google.dev/gemini-api/docs/text-generation
+        # 0. Make a request in Postman to see the request and response
+        # 1. Construct URL: `url = f"{self._endpoint}/{self._model_name}:streamGenerateContent?alt=sse"`
+        # 2. Prepare headers dict with:
+        #   - "Content-Type" ("application/json")
+        #   - "x-goog-api-key" (self api key)
+        # 3. Prepare request data dict:
+        #   - "system_instruction" ({"parts": [{"text": self._system_prompt}]})
+        #   - "contents" (self._to_gemini_contents(messages))
+        #   - "generationConfig" ({"maxOutputTokens": kwargs.get("max_tokens", 1024)})
+        # 4. Initialize empty contents list to collect streamed text chunks
+        # 5. Create aiohttp ClientSession using `async with aiohttp.ClientSession() as session:`
+        # 6. Execute async POST request using `async with session.post(url=url, headers=headers, json=request_data) as response:`
+        # 7.1. If response status is 200:
+        #   - iterate through response content lines using `async for line in response.content:`
+        #   - decode each line: `line_str = line.decode('utf-8').strip()`
+        #   - check if line starts with "data: " (SSE format)
+        #   - extract JSON data: `data = line_str[6:].strip()`
+        #   - parse JSON data: `parsed_data = json.loads(data)`
+        #   - get candidates: `candidates = parsed_data.get("candidates", [])`
+        #   - if candidates are present:
+        #       - get parts: `parts = candidates[0].get("content", {}).get("parts", [])`
+        #       - for each part in parts:
+        #           - get text content: `text_content = part.get("text", "")`
+        #           - if text_content is not empty:
+        #               - print text_content without newline (end='')
+        #               - append text_content to contents list
+        # 7.2. Otherwise:
+        #   - get error text: `error_text = await response.text()`
+        #   - print error: f"{response.status} {error_text}"
+        # 8. Print empty line (for formatting)
+        # 9. Return ASSISTANT message with joined contents: `Message(role=Role.ASSISTANT, content=''.join(contents))`
+        raise NotImplementedError
