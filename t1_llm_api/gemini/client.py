@@ -70,6 +70,7 @@ class GeminiAIClient(AIClient):
             Gemini uses 'system_instruction' parameter for system-level guidance.
             The response is printed to stdout before being returned.
         """
+        print(messages)
         response = self._client.models.generate_content(
             model=self._model_name,
             contents=self._to_gemini_contents(messages),

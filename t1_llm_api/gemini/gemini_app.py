@@ -1,7 +1,7 @@
 import asyncio
 
 from t1_llm_api.base_app import start
-from t1_llm_api.constants import GEMINI_ENDPOINT, GEMINI_API_KEY, DEFAULT_SYSTEM_PROMPT
+from constants import GEMINI_ENDPOINT, GEMINI_API_KEY, DEFAULT_SYSTEM_PROMPT
 from t1_llm_api.gemini.client import GeminiAIClient
 from t1_llm_api.gemini.custom_client import CustomGeminiAIClient
 
