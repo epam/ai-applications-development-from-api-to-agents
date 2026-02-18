@@ -8,8 +8,9 @@ from t2_llms_output_tuning._main import run
 
 # TODO 2: temperature — controls randomness. Range: 0.0-2.0, default: 1.0
 #  Lower = more deterministic, higher = more creative
-#  Query: "Give me a name for a coffee shop"
+#  Query: "Why white is white?"
 #  Try: temperature=0.0 vs temperature=2.0, compare outputs
+#  ⚠️ Note: it is okay that after temperature=1.5 you get some odd characters in output 😅
 
 # TODO 3: top_p — nucleus sampling, keeps tokens within cumulative probability. Range: 0.0-1.0, default: 1.0
 #  Lower = fewer token choices, more focused output
@@ -32,17 +33,19 @@ from t2_llms_output_tuning._main import run
 #  Try: response_format={"type": "json_schema", "json_schema": {"name": "languages", "strict": True, "schema": {"type": "object", "properties": {"languages": {"type": "array", "items": {"type": "object", "properties": {"name": {"type": "string"}, "year": {"type": "integer"}}, "required": ["name", "year"], "additionalProperties": False}}}, "required": ["languages"], "additionalProperties": False}}}
 
 # TODO 7: frequency_penalty — penalizes tokens based on how often they appeared so far. Range: -2.0 to 2.0, default: 0
+#  ⚠️ Note: Will work for models like gpt-4o
 #  Positive = reduces repetition, negative = encourages repetition
 #  Query: "Write a paragraph about the ocean"
 #  Try: frequency_penalty=0.0 vs frequency_penalty=1.5
 
 # TODO 8: presence_penalty — penalizes tokens based on whether they appeared at all. Range: -2.0 to 2.0, default: 0
+#  ⚠️ Note: Will work for models like gpt-4o
 #  Positive = encourages new topics, negative = stays on topic
 #  Query: "Write a paragraph about the ocean"
 #  Try: presence_penalty=0.0 vs presence_penalty=1.5
 
 # TODO 9: seed — attempts deterministic output. Same seed + same input = same output (best effort)
-#  ⚠️ Note: may not be supported by all models
+#  ⚠️ Note: Will work for models like gpt-4o
 #  Query: "Give me a name for a coffee shop"
 #  Try: seed=42 — run twice with the same seed and compare outputs
 
@@ -53,7 +56,7 @@ from t2_llms_output_tuning._main import run
 #  Try: reasoning_effort="low" vs reasoning_effort="high"
 
 run(
-    client=OpenAIChatCompletionsClient(model_name='gpt-4o'),
+    client=OpenAIChatCompletionsClient(model_name='gpt-5.2'),
     print_request=True, # Switch to False if you do not want to see the request in console
     print_only_content=False, # Switch to True if you want to see only content from response
 
