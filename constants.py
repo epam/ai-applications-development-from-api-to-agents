@@ -13,8 +13,9 @@ import os
 DEFAULT_SYSTEM_PROMPT = "You are an assistant who answers concisely and informatively."
 
 # OpenAI API configuration
-OPENAI_CHAT_COMPLETIONS_ENDPOINT = "https://api.openai.com/v1/chat/completions"
-OPENAI_RESPONSES_ENDPOINT = "https://api.openai.com/v1/responses"
+OPENAI_HOST = "https://api.openai.com"
+OPENAI_CHAT_COMPLETIONS_ENDPOINT = f"{OPENAI_HOST}/v1/chat/completions"
+OPENAI_RESPONSES_ENDPOINT = f"{OPENAI_HOST}/v1/responses"
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
 
 # Anthropic API configuration
