@@ -10,7 +10,7 @@ from pydantic import SecretStr
 
 from constants import OPENAI_API_KEY
 
-SYSTEM_PROMPT = """You are a RAG-powered assistant that assists users with their questions about microwave usage.
+_SYSTEM_PROMPT = """You are a RAG-powered assistant that assists users with their questions about microwave usage.
             
 ## Structure of User message:
 `RAG CONTEXT` - Retrieved documents relevant to the query.
@@ -23,7 +23,7 @@ SYSTEM_PROMPT = """You are a RAG-powered assistant that assists users with their
 - If no relevant information exists in `RAG CONTEXT` or conversation history, state that you cannot answer the question.
 """
 
-USER_PROMPT = """##RAG CONTEXT:
+_USER_PROMPT = """##RAG CONTEXT:
 {context}
 
 
@@ -31,7 +31,7 @@ USER_PROMPT = """##RAG CONTEXT:
 {query}"""
 
 
-class MicrowaveRAG:
+class _MicrowaveRAG:
 
     def __init__(self, embeddings: OpenAIEmbeddings, llm_client: ChatOpenAI):
         self.llm_client = llm_client
@@ -123,7 +123,7 @@ class MicrowaveRAG:
         """
         print(f"\n🔗 STEP 2: AUGMENTATION\n{'-' * 100}")
 
-        augmented_prompt = USER_PROMPT.format(context=context, query=query)
+        augmented_prompt = _USER_PROMPT.format(context=context, query=query)
 
         print(f"{augmented_prompt}\n{'=' * 100}")
         return augmented_prompt
@@ -139,7 +139,7 @@ class MicrowaveRAG:
         print(f"\n🤖 STEP 3: GENERATION\n{'-' * 100}")
 
         messages = [
-            SystemMessage(content=SYSTEM_PROMPT),
+            SystemMessage(content=_SYSTEM_PROMPT),
             HumanMessage(content=augmented_prompt)
         ]
 
@@ -149,7 +149,7 @@ class MicrowaveRAG:
         return response.content
 
 
-def main(rag: MicrowaveRAG):
+def main(rag: _MicrowaveRAG):
     print("🎯 Microwave RAG Assistant")
 
     while True:
@@ -163,7 +163,7 @@ def main(rag: MicrowaveRAG):
 
 
 main(
-    MicrowaveRAG(
+    _MicrowaveRAG(
         embeddings=OpenAIEmbeddings(
             model='text-embedding-3-small',
             api_key=SecretStr(OPENAI_API_KEY),
