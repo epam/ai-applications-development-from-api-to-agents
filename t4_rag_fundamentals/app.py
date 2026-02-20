@@ -1,13 +1,14 @@
 import os
+
 from langchain_community.document_loaders import TextLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.vectorstores import VectorStore
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import SecretStr
 
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+from constants import OPENAI_API_KEY
 
 SYSTEM_PROMPT = """You are a RAG-powered assistant that assists users with their questions about microwave usage.
             
