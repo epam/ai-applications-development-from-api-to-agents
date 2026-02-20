@@ -2,7 +2,7 @@ import json
 from abc import ABC, abstractmethod
 from typing import Any
 
-from t2_llms_output_tuning._models.message import Message
+from commons.models.message import Message
 
 
 class AIClient(ABC):
