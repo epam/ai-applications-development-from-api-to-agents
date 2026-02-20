@@ -10,3 +10,7 @@ protobuf==6.33.5
 fastmcp==2.14.0
 redis[hiredis]==7.1.1
 fastapi==0.128.7
+
+langchain-community==0.4.1
+langchain-openai==1.1.10
+faiss-cpu==1.13.2
