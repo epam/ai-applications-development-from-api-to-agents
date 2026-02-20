@@ -4,7 +4,7 @@ from datetime import datetime
 
 import requests
 
-from constants import OPENAI_API_KEY, OPENAI_HOST
+from commons.constants import OPENAI_API_KEY, OPENAI_HOST
 
 
 # https://developers.openai.com/api/docs/guides/audio#add-audio-to-your-existing-application

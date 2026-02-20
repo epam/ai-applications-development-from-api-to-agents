@@ -1,7 +1,7 @@
 from t2_llms_output_tuning._clients._base_client import AIClient
-from t2_llms_output_tuning._models.conversation import Conversation
-from t2_llms_output_tuning._models.message import Message
-from t2_llms_output_tuning._models.role import Role
+from commons.models.conversation import Conversation
+from commons.models.message import Message
+from commons.models.role import Role
 
 
 def run(

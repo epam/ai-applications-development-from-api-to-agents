@@ -3,7 +3,7 @@ from typing import Any
 
 import requests
 
-from constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY
 
 
 class OpenAIClientT3:

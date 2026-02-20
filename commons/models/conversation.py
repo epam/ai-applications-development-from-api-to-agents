@@ -1,7 +1,7 @@
 import uuid
 from dataclasses import dataclass, field
 
-from t2_llms_output_tuning._models.message import Message
+from commons.models.message import Message
 
 
 @dataclass

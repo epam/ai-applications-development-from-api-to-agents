@@ -2,8 +2,8 @@ import json
 import aiohttp
 import requests
 
-from t1_llm_api._models.message import Message
-from t1_llm_api._models.role import Role
+from commons.models.message import Message
+from commons.models.role import Role
 from t1_llm_api.openai.base import BaseOpenAIClient
 
 

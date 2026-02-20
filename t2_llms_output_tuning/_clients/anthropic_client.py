@@ -2,10 +2,10 @@ import json
 
 import requests
 
-from constants import ANTHROPIC_ENDPOINT, ANTHROPIC_API_KEY
+from commons.constants import ANTHROPIC_ENDPOINT, ANTHROPIC_API_KEY
 from t2_llms_output_tuning._clients._base_client import AIClient
-from t2_llms_output_tuning._models.message import Message
-from t2_llms_output_tuning._models.role import Role
+from commons.models.message import Message
+from commons.models.role import Role
 
 
 class AnthropicAIClient(AIClient):

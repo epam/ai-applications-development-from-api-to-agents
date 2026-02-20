@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from t1_llm_api._models.message import Message
+from commons.models.message import Message
 
 
 class AIClient(ABC):

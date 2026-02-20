@@ -3,7 +3,7 @@ from datetime import datetime
 
 import requests
 
-from constants import OPENAI_API_KEY, OPENAI_HOST
+from commons.constants import OPENAI_API_KEY, OPENAI_HOST
 
 
 class Voice:

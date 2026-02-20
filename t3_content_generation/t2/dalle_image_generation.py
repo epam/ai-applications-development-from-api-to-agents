@@ -1,4 +1,4 @@
-from constants import OPENAI_HOST
+from commons.constants import OPENAI_HOST
 from t3_content_generation._openai_client import OpenAIClientT3
 
 
