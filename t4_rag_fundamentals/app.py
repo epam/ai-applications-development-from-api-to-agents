@@ -8,7 +8,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import SecretStr
 
-from constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY
 
 _SYSTEM_PROMPT = """You are a RAG-powered assistant that assists users with their questions about microwave usage.
             

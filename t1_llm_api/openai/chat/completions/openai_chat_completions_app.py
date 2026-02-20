@@ -1,7 +1,7 @@
 import asyncio
 
 from t1_llm_api.base_app import start
-from constants import OPENAI_CHAT_COMPLETIONS_ENDPOINT, OPENAI_API_KEY, DEFAULT_SYSTEM_PROMPT
+from commons.constants import OPENAI_CHAT_COMPLETIONS_ENDPOINT, OPENAI_API_KEY, DEFAULT_SYSTEM_PROMPT
 from t1_llm_api.openai.chat.completions.client import OpenAIClient
 from t1_llm_api.openai.chat.completions.custom_client import CustomOpenAIClient
 
