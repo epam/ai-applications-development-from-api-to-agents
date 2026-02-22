@@ -32,6 +32,11 @@ embeddings_client = EmbeddingsClient(
     model_name='text-embedding-3-small',
     api_key=OPENAI_API_KEY
 )
+# embeddings_client = EmbeddingsClient(
+#     endpoint=f"http://localhost:11434/v1/embeddings",
+#     model_name='nomic-embed-text',
+#     api_key="ollama"
+# )
 completion_client = ChatCompletionClient(
     endpoint=OPENAI_CHAT_COMPLETIONS_ENDPOINT,
     model_name='gpt-5.2',
