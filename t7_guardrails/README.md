@@ -22,13 +22,13 @@ break it — and then protect it.
 
 ---
 
-## Task 1: System Prompt Hardening [t_1/prompt_injection.py](t_1/prompt_injection.py)
+## Task 1: System Prompt Hardening [t1/prompt_injection.py](t1/prompt_injection.py)
 
 A system prompt is the **first and most fundamental guardrail** in any AI application. Before adding any
 technical layer (validators, filters, firewalls), you need a well-crafted system prompt that clearly defines
 what the model is and is not allowed to do. Everything else builds on top of this foundation.
 
-Open [t_1/prompt_injection.py](t_1/prompt_injection.py). The file contains a `SYSTEM_PROMPT` and a `PROFILE`
+Open [t1/prompt_injection.py](t1/prompt_injection.py). The file contains a `SYSTEM_PROMPT` and a `PROFILE`
 with Amanda Grace Johnson's sensitive data. Run the assistant.
 
 **Your task — two parts:**
@@ -50,12 +50,12 @@ and your own variants consistently fail to extract sensitive data.
 
 ---
 
-## Task 2: Input Validation Guardrail [t_2/input_llm_based_validation.py](t_2/input_llm_based_validation.py)
+## Task 2: Input Validation Guardrail [t2/input_llm_based_validation.py](t2/input_llm_based_validation.py)
 
 An LLM-based guardrail that inspects every user message **before** it reaches the assistant. Suspicious
 inputs are blocked and never processed.
 
-Open [t_2/input_llm_based_validation.py](t_2/input_llm_based_validation.py) and explore how it works:
+Open [t2/input_llm_based_validation.py](t2/input_llm_based_validation.py) and explore how it works:
 - A separate validation LLM call classifies the input as safe or malicious
 - Uses structured output (`response_format`) to return a `Validation` model with `valid` flag and `description`
 - Blocked inputs receive an immediate rejection without touching the assistant
@@ -68,12 +68,12 @@ that slip past the input validator while still tricking the assistant.
 
 ---
 
-## Task 3: Output Validation Guardrail [t_3/output_llm_based_validation.py](t_3/output_llm_based_validation.py)
+## Task 3: Output Validation Guardrail [t3/output_llm_based_validation.py](t3/output_llm_based_validation.py)
 
 A guardrail that inspects the **assistant's response** for PII leaks after the LLM has already replied.
 Operates in two modes controlled by the `soft_response` flag.
 
-Open [t_3/output_llm_based_validation.py](t_3/output_llm_based_validation.py) and explore how it works:
+Open [t3/output_llm_based_validation.py](t3/output_llm_based_validation.py) and explore how it works:
 - The assistant responds normally; a separate validation LLM call then checks the response for PII
 - **Hard mode** (`soft_response=False`): blocks the response entirely and appends a rejection to history
 - **Soft mode** (`soft_response=True`): routes the leaking response through a PII-filtering LLM that
@@ -88,12 +88,12 @@ across sentences, embedded in code blocks, etc.).
 
 ---
 
-## Task 4: Streaming PII Guardrail [t_4/streaming_pii_guardrail.py](t_4/streaming_pii_guardrail.py)
+## Task 4: Streaming PII Guardrail [t4/streaming_pii_guardrail.py](t4/streaming_pii_guardrail.py)
 
 A real-time filter that redacts PII **as tokens stream in**, without waiting for the full response.
 Two implementations are provided side by side.
 
-Open [t_4/streaming_pii_guardrail.py](t_4/streaming_pii_guardrail.py) and explore how it works:
+Open [t4/streaming_pii_guardrail.py](t4/streaming_pii_guardrail.py) and explore how it works:
 - **`StreamingPIIGuardrail`** — regex-based: buffers incoming chunks and applies PII patterns (SSN, credit card,
   address, dates, CVV, etc.) before flushing safe content to the user
 - **`PresidioStreamingPIIGuardrail`** — NLP-based: uses Microsoft Presidio with a spaCy model to detect
