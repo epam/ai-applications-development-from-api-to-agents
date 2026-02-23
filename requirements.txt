@@ -13,5 +13,6 @@ fastapi==0.128.7
 
 langchain-community==0.4.1
 langchain-openai==1.1.10
+langchain-chroma==1.1.0
 faiss-cpu==1.13.2
 psycopg2-binary>=2.9.11

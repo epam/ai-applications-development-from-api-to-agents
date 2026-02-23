@@ -26,3 +26,6 @@ ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
 # Google Gemini API configuration
 GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models"
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+
+# User Service API configuration
+USER_SERVICE_ENDPOINT = "http://localhost:8041"
