@@ -140,7 +140,7 @@ class InputGrounder:
         ]
 
         response = llm_client.beta.chat.completions.parse(
-            model='gpt-4o-mini',
+            model='gpt-4.1-nano',
             temperature=0.0,
             messages=messages,
             response_format=GroupingResults,

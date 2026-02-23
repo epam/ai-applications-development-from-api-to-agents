@@ -12,12 +12,14 @@ By exploring this project, you will learn:
 - Token optimization strategies and cost management
 - Trade-offs between accuracy, performance, and cost in AI systems
 
+### If the task in the main branch is hard for you, then switch to the `main-detailed` branch
+
 ---
 
 ## Task
 
-### 0. Run [docker-compose.yml](docker-compose.yml)
-The mock user service runs on `localhost:8041` and provides:
+### 0. Run [docker-compose.yml](docker-compose.yml) with User Service.
+The mock user service runs on `localhost:8041` and provides several rest endpoints to work with:
 - `/v1/users` - Get all users
 - `/v1/users/{id}` - Get specific user
 - `/v1/users/search` - Search users by fields
