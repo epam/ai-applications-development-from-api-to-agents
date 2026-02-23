@@ -10,17 +10,16 @@ from commons.constants import OPENAI_API_KEY
 class PresidioStreamingPIIGuardrail:
 
     def __init__(self, buffer_size: int =100, safety_margin: int = 20):
-        nlp_configuration = {
-            "nlp_engine_name": "spacy",
-            "models": [{"lang_code": "en", "model_name": "en_core_web_sm"}]
-        }
-        provider = NlpEngineProvider(nlp_configuration=nlp_configuration)
-        self.analyzer = AnalyzerEngine(nlp_engine=provider.create_engine())
-        self.anonymizer = AnonymizerEngine()
-
-        self.buffer = ""
-        self.buffer_size = buffer_size
-        self.safety_margin = safety_margin
+        #TODO:
+        # 1. Create dict with language configurations: {"nlp_engine_name": "spacy","models": [{"lang_code": "en", "model_name": "en_core_web_sm"}]}
+        #    Read more about it here: https://microsoft.github.io/presidio/tutorial/05_languages/
+        # 2. Create NlpEngineProvider with created configurations
+        # 3. Create AnalyzerEngine, as `nlp_engine` crate engine by crated provider (will be used as obj var later)
+        # 4. Create AnonymizerEngine (will be used as obj var later)
+        # 5. Create buffer as empty string (here we will accumulate chunks content and process it, will be used as obj var late)
+        # 6. Create buffer_size as `buffer_size` (will be used as obj var late)
+        # 7. Create safety_margin as `safety_margin` (will be used as obj var late)
+        raise NotImplementedError
 
     def process_chunk(self, chunk: str) -> str:
         #TODO:
