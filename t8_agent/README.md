@@ -41,48 +41,74 @@ Start with the User Service tools in [task/tools/users/](task/tools/users/). Eac
 - **[update_user_tool.py](task/tools/users/update_user_tool.py)** — update an existing user record
 - **[delete_user_tool.py](task/tools/users/delete_user_tool.py)** — delete a user by ID
 
-Then implement the web search tool in **[task/tools/web_search.py](task/tools/web_search.py)** — it calls an OpenAI search model to answer web queries on the agent's behalf.
+Then implement the web search tool in **[task/tools/web_search.py](task/tools/web_search.py)** — it calls the OpenAI Responses API (`gpt-5.2` with `tools: [{"type": "web_search"}]`) and extracts the result from the `output_text` block in the response.
 
 ---
 
-### 2. Implement the OpenAI agent — [task/agents/openai.py](task/agents/openai.py)
+### 2. Implement `BaseAgent` — [task/agents/_base.py](task/agents/_base.py)
 
-Extend `BaseAgent` ([task/agents/_base.py](task/agents/_base.py)) to call the **OpenAI Chat Completions API**. The agentic loop:
+Implement `__init__`:
+- Validate `api_key` (raise `ValueError` if empty or blank)
+- Assign `self._model`, `self._api_key`, `self._system_prompt`
+- Build `self._tools_dict` as `{tool.name: tool}` for fast lookup during execution
 
-1. Send the conversation + tools to the API
-2. If `finish_reason == "tool_calls"` — execute each requested tool and append the results as `tool` messages
-3. Recurse until the model returns a plain text response (`finish_reason == "stop"`)
+`get_response` is abstract — you will implement it in the provider-specific subclasses below.
+
+---
+
+### 3. Implement the OpenAI agent — [task/agents/openai.py](task/agents/openai.py)
+
+Extend `BaseAgent` to call the **OpenAI Chat Completions API**. Implement four methods:
+
+- **`__init__`** — format `api_key` as a Bearer token, build `_tools_schemas` using `tool.openai_schema`, set `_endpoint`
+- **`get_response`** — build the request payload (prepend system message locally, not stored in `messages`), POST to the API, parse the response; if `finish_reason == "tool_calls"` append the assistant message + tool results to `messages` and recurse; otherwise return the final `Message`
+- **`_process_tool_calls`** — for each tool call extract `id`, `function.name`, parse `function.arguments` with `json.loads`, call `_call_tool`, return a list of `TOOL` messages
+- **`_call_tool`** — look up the tool in `_tools_dict` and call `execute`, or return an unknown-function error string
 
 See the **OpenAI API Reference** section at the bottom for the exact request/response shapes.
 
 ---
 
-### 3. Write the system prompt — [task/prompts.py](task/prompts.py)
+### 4. Write the system prompt — [task/prompts.py](task/prompts.py)
 
 Define a `SYSTEM_PROMPT` that tells the agent its role, which tools it has, and how it should behave (e.g. confirm before deleting, use web search when creating users).
 
 ---
 
-### 4. Wire everything up — [task/app.py](task/app.py)
+### 5. Wire everything up — [task/app.py](task/app.py)
 
-Instantiate `UserServiceClient`, create all tools, create `OpenAIBasedAgent` with `system_prompt`, and run the conversation loop. Try the following sample inputs:
+Implement `main()`:
+- Create `UserServiceClient` and all tools
+- Create `OpenAIBasedAgent` with `system_prompt`
+- Create `Conversation` and run the input loop: read user input, add it to the conversation, call `agent.get_response`, add the reply and print it
+
+Try the following sample inputs:
 - `Add Andrej Karpathy as a new user`
 - `Find all female users`
 - `Delete user with id 3`
 
 ---
 
-### 5. Implement the Anthropic agent — [task/agents/anthropic.py](task/agents/anthropic.py)
+### 6. Implement the Anthropic agent — [task/agents/anthropic.py](task/agents/anthropic.py)
 
-Extend `BaseAgent` again, this time for the **Anthropic Messages API**. Key differences from OpenAI:
+Extend `BaseAgent` for the **Anthropic Messages API**. Implement five methods:
 
-- Auth uses `x-api-key` + `anthropic-version: 2023-06-01` headers (no `Bearer` prefix)
-- System prompt is a top-level `system` field — not part of the messages array
-- Tool schema uses `anthropic_schema` format (`name` / `description` / `input_schema`)
-- Response `content` is a list of typed blocks (`"text"` or `"tool_use"`)
-- Stop signal is `stop_reason == "tool_use"` (not `"tool_calls"`)
-- Tool inputs arrive as a dict (`block["input"]`) — no `json.loads()` needed
-- Tool results go back as a `user` message whose content is a list of `"tool_result"` blocks; multiple results must be grouped into a single user turn
+- **`__init__`** — set `_endpoint`, build `_tools_schemas` using `tool.anthropic_schema` (flat format, no `"type": "function"` wrapper)
+- **`get_response`** — build headers (`x-api-key`, `anthropic-version: 2023-06-01`), add `system` as a top-level field (not inside messages), POST to the API; if `stop_reason == "tool_use"` append messages and recurse; otherwise return the final `Message`
+- **`_to_anthropic_messages`** — convert the internal `Message` list to Anthropic format: group consecutive `TOOL` messages into a single user message with `tool_result` blocks; replay full content blocks for `AI` messages that had tool calls
+- **`_process_tool_calls`** — same as OpenAI but `block["input"]` is already a dict (no `json.loads` needed)
+- **`_call_tool`** — identical to the OpenAI agent
+
+Key differences from OpenAI summarised:
+
+| | OpenAI | Anthropic |
+|---|---|---|
+| Auth header | `Authorization: Bearer ...` | `x-api-key: ...` + `anthropic-version` |
+| System prompt | message with `role: system` | top-level `system` field |
+| Tool schema | `openai_schema` (`parameters`) | `anthropic_schema` (`input_schema`) |
+| Stop signal | `finish_reason: "tool_calls"` | `stop_reason: "tool_use"` |
+| Tool input | JSON string → `json.loads` | dict directly (`block["input"]`) |
+| Tool results | separate `tool` messages | grouped into one `user` message |
 
 Switch `app.py` to `AnthropicBasedAgent` and run the same queries.
 
