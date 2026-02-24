@@ -4,7 +4,7 @@ from typing import Any
 from openai import AsyncOpenAI
 
 from commons.constants import OPENAI_API_KEY
-from commons.user_service_client import UserServiceClient
+from t6_grounding.user_service_client import UserServiceClient
 
 BATCH_SYSTEM_PROMPT = """You are a user search assistant. Your task is to find users from the provided list that match the search criteria.
 

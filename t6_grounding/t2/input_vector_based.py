@@ -7,7 +7,7 @@ from langchain_openai import OpenAIEmbeddings
 from openai import OpenAI
 
 from commons.constants import OPENAI_API_KEY
-from commons.user_service_client import UserServiceClient
+from t6_grounding.user_service_client import UserServiceClient
 
 SYSTEM_PROMPT = """You are a RAG-powered assistant that assists users with their questions about user information.
             

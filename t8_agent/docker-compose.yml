@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  userservice:
+    image: khshanovskyi/mockuserservice:latest
+    ports:
+      - "8041:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - GENERATE_USERS=true
+      - USER_COUNT=1000
+    volumes:
+      - ./data:/app/data  # Optional: persist database
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
