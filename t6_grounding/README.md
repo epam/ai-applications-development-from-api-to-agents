@@ -18,11 +18,12 @@ By exploring this project, you will learn:
 
 ### 0. Run [docker-compose.yml](docker-compose.yml) with User Service.
 The mock user service runs on `localhost:8041` and provides several rest endpoints to work with:
-- `/v1/users` - Get all users
-- `/v1/users/{id}` - Get specific user
-- `/v1/users/search` - Search users by fields
-- `/health` - Service health check
+- `GET /v1/users` — list all users
+- `GET /v1/users/{id}` — get a specific user
+- `GET /v1/users/search` — search users by fields
+- `GET /health` — service health check
 - Swagger UI 👉 http://localhost:8041/docs
+- Use [mock-user-service.postman_collection.json](mock-user-service.postman_collection.json) in Postman to play with API
 
 ---
 

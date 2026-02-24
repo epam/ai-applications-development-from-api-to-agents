@@ -5,7 +5,7 @@ from openai import OpenAI
 from pydantic import BaseModel, Field
 
 from commons.constants import OPENAI_API_KEY
-from commons.user_service_client import UserServiceClient
+from t6_grounding.user_service_client import UserServiceClient
 
 #TODO:
 # Define QUERY_ANALYSIS_PROMPT for extracting search parameters from user questions:
