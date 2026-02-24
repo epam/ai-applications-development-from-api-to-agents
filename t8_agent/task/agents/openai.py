@@ -22,9 +22,17 @@ class OpenAIBasedAgent(BaseAgent):
         print(json.dumps(self._tools_schemas, indent=4))
 
     def get_response(self, messages: list[Message], print_request: bool = True) -> Message:
-        # Prepend system message without mutating the caller's list
-        if self._system_prompt:
-            messages = [Message(role=Role.SYSTEM, content=self._system_prompt)] + messages
+        """Send messages to the API and handle the tool-call loop via recursion.
+
+        The system prompt is prepended only for the API payload and never stored
+        in `messages`, so tool-round mutations (assistant tool_calls + tool results)
+        propagate back to the caller's conversation list correctly.
+        """
+        # Prepend system for this API call only — never stored in `messages`
+        request_messages = (
+            [Message(role=Role.SYSTEM, content=self._system_prompt)] + messages
+            if self._system_prompt else messages
+        )
 
         headers = {
             "Authorization": self._api_key,
@@ -32,13 +40,13 @@ class OpenAIBasedAgent(BaseAgent):
         }
         request_data = {
             "model": self._model,
-            "messages": [msg.to_dict() for msg in messages],
+            "messages": [msg.to_dict() for msg in request_messages],
             "tools": self._tools_schemas,
         }
 
         if print_request:
             print(self._endpoint)
-            print("REQUEST:", json.dumps({"messages": [msg.to_dict() for msg in messages]}, indent=2))
+            print("REQUEST:", json.dumps({"messages": [msg.to_dict() for msg in request_messages]}, indent=2))
 
         response = requests.post(url=self._endpoint, headers=headers, json=request_data)
 
@@ -67,7 +75,6 @@ class OpenAIBasedAgent(BaseAgent):
                     tool_messages = self._process_tool_calls(tool_calls)
                     messages.extend(tool_messages)
 
-                    # Recursive call to get final response
                     return self.get_response(messages, print_request)
 
                 return ai_response
