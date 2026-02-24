@@ -4,7 +4,7 @@ from typing import Any
 from openai import AsyncOpenAI
 
 from commons.constants import OPENAI_API_KEY
-from commons.user_service_client import UserServiceClient
+from t6_grounding.user_service_client import UserServiceClient
 
 #TODO:
 # Define BATCH_SYSTEM_PROMPT - instructs the LLM to act as a user search assistant:
