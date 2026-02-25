@@ -4,8 +4,8 @@ from typing import Any
 import requests
 
 from commons.constants import OPENAI_CHAT_COMPLETIONS_ENDPOINT
-from t8_agent.task._models.message import Message
-from t8_agent.task._models.role import Role
+from commons.models.message import Message
+from commons.models.role import Role
 from t8_agent.task.agents._base import BaseAgent
 from t8_agent.task.tools.base import BaseTool
 

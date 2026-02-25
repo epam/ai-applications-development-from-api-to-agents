@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from t8_agent.task._models.message import Message
+from commons.models.message import Message
 from t8_agent.task.tools.base import BaseTool
 
 

@@ -4,8 +4,8 @@ from typing import Any
 import requests
 
 from commons.constants import ANTHROPIC_ENDPOINT
-from t8_agent.task._models.message import Message
-from t8_agent.task._models.role import Role
+from commons.models.message import Message
+from commons.models.role import Role
 from t8_agent.task.agents._base import BaseAgent
 from t8_agent.task.tools.base import BaseTool
 
@@ -56,9 +56,8 @@ class AnthropicBasedAgent(BaseAgent):
             tool_use_blocks = [b for b in content_blocks if b["type"] == "tool_use"]
 
             ai_response = Message(
-                role=Role.AI,
+                role=Role.ASSISTANT,
                 content=text_content,
-                # Store full content blocks so they can be replayed as the assistant turn
                 tool_calls=content_blocks if tool_use_blocks else None,
             )
 
@@ -68,7 +67,6 @@ class AnthropicBasedAgent(BaseAgent):
                 tool_messages = self._process_tool_calls(tool_use_blocks)
                 messages.extend(tool_messages)
 
-                # Recursive call to get final response
                 return self.get_response(messages, print_request)
 
             return ai_response
@@ -92,8 +90,7 @@ class AnthropicBasedAgent(BaseAgent):
                     })
                     i += 1
                 result.append({"role": "user", "content": tool_results})
-            elif msg.role == Role.AI:
-                # Replay full content blocks (text + tool_use) so Anthropic can correlate results
+            elif msg.role == Role.ASSISTANT:
                 content = msg.tool_calls if msg.tool_calls else msg.content
                 result.append({"role": "assistant", "content": content})
                 i += 1
