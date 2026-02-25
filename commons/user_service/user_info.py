@@ -41,3 +41,9 @@ class UserUpdate(BaseModel):
     company: Optional[str] = None
     salary: Optional[float] = None
     credit_card: Optional[UserCreate] = None
+
+class UserSearchRequest(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    surname: Optional[str] = None
+    gender: Optional[str] = None

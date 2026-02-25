@@ -7,7 +7,7 @@ anthropic>=0.79.0
 google-genai==1.62.0
 protobuf==6.33.5
 
-fastmcp==2.14.0
+fastmcp==3.0.2
 redis[hiredis]==7.1.1
 fastapi==0.128.7
 
