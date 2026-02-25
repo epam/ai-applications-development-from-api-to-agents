@@ -1,8 +1,9 @@
 from commons.constants import OPENAI_API_KEY, ANTHROPIC_API_KEY
+from commons.models.conversation import Conversation
+from commons.models.message import Message
+from commons.models.role import Role
 from commons.user_service.client import UserServiceClient
-from t8_agent.task._models.conversation import Conversation
-from t8_agent.task._models.message import Message
-from t8_agent.task._models.role import Role
+
 from t8_agent.task.agents.anthropic import AnthropicBasedAgent
 from t8_agent.task.agents.openai import OpenAIBasedAgent
 from t8_agent.task.prompts import SYSTEM_PROMPT
