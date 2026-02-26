@@ -10,8 +10,10 @@ By exploring and working with this project, you will learn:
 - How to configure client and connect to MCP server
 - How to create simple Agent with tools from MCP server
 - Key features of MCP
+- 
+### If the task in the main branch is hard for you, switch to the `main-detailed` branch
 
-# <img src="flow.png">
+![](flow.png)
 
 ---
 
