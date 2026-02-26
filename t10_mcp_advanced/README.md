@@ -24,7 +24,7 @@ By completing this task, you will learn:
 1. Run User Service [root docker-compose](docker-compose.yml) (Optional step in case if you have it from previous tasks)
 2. Open [mcp_server](mcp_server) and review mcp server structure:
    - in [models](mcp_server/models) persist implemented request and response models, details about request and response [official documentation](https://modelcontextprotocol.io/specification/2025-06-18/basic)
-   - in [services/mcp_server.py](mcp_server/mcp_server.py) you need to implement parts described in `TODO` sections
+   - in [ums_mcp_server.py](mcp_server/ums_mcp_server.py) you need to implement parts described in `TODO` sections
    - in [tools](mcp_server/tools) you will find simple tools
    - lastly, in [server.py](mcp_server/server.py) provide implementations described in `TODO` sections
 3. Run MCP server locally
