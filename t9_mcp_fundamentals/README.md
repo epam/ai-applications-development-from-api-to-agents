@@ -11,7 +11,7 @@ By exploring and working with this project, you will learn:
 - How to create simple Agent with tools from MCP server
 - Key features of MCP
 
-# <img src="flow.png">
+![](flow.png)
 
 ---
 
