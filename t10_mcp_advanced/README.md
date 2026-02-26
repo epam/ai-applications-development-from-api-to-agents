@@ -14,8 +14,6 @@ By completing this task, you will learn:
 - **Streaming Responses**: Work with Server-Sent Events in Streamable HTTP for real-time communication
 - **Error Handling**: Implement robust error handling in distributed systems
 
-### If the task in the main branch is hard for you, switch to the `main-detailed` branch
-
 ---
 
 ## Task:
