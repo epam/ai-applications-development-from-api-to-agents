@@ -25,7 +25,7 @@ By completing this task, you will learn:
 2. Open [mcp_server](mcp_server) and review mcp server structure:
    - in [models](mcp_server/models) persist implemented request and response models, details about request and response [official documentation](https://modelcontextprotocol.io/specification/2025-06-18/basic)
    - in [ums_mcp_server.py](mcp_server/ums_mcp_server.py) you need to implement parts described in `TODO` sections
-   - in [tools](mcp_server/tools) you will find simple tools
+   - in [tools](mcp_server/tools) you will find simple tools, you need to implement parts described in `TODO` sections
    - lastly, in [server.py](mcp_server/server.py) provide implementations described in `TODO` sections
 3. Run MCP server locally
 4. Test it with Postman. Import [mcp_custom.postman_collection.json](mcp_custom.postman_collection.json) into postman. (`init` -> `init-notification` -> `tools/list` -> `tools/call`)
@@ -113,9 +113,9 @@ Check if Arkadiy Dobkin present as a user, if not then search info about him in 
 - **Async Context**: Use proper async/await patterns for HTTP requests
 
 
-## 📚 Additional Resources
+## Additional Resources
 
-- [MCP Specification](https://spec.modelcontextprotocol.io/)
+- [MCP Specification](https://modelcontextprotocol.io/docs/getting-started/intro)
 - [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification)
 - [MCP Error Codes](https://www.mcpevals.io/blog/mcp-error-codes)
-- [OpenAI Function Calling](https://platform.openai.com/docs/guides/function-calling)
+- [OpenAI Function Calling](https://developers.openai.com/api/docs/guides/function-calling)
