@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  userservice:
+    image: khshanovskyi/mockuserservice:latest
+    ports:
+      - "8041:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - GENERATE_USERS=true
+      - USER_COUNT=1000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+
+  # Keycloak — Authorization Server
+  # Admin UI:   http://localhost:8089
+  # Admin creds: admin / admin
+  #   Username: admin
+  #   Password: admin
+  #
+  # Realm:   mcp-realm
+  # Client:  mcp-client  (public, PKCE)
+  #
+  # Users:
+  #  With access (has role: mcp-tools-access):
+  #     Username: mcp-user
+  #     Password: password
+  #  Without access (no roles):
+  #     Username: no-access-user
+  #     Password: password
+  #
+  # ⚠️ Token TTL (Time To Live) is 60 seconds
+  #
+  # Well-known: http://localhost:8089/realms/mcp-realm/.well-known/openid-configuration
+  # JWKS:       http://localhost:8089/realms/mcp-realm/protocol/openid-connect/certs
+  # Token:      http://localhost:8089/realms/mcp-realm/protocol/openid-connect/token
+  # Authorize:  http://localhost:8089/realms/mcp-realm/protocol/openid-connect/auth
+  # ──────────────────────────────────────────
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3
+    command: start-dev --import-realm
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HTTP_PORT=8089
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HTTP_ENABLED=true
+      - KC_LOG_LEVEL=INFO
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./keycloak/mcp-realm-config.json:/opt/keycloak/data/import/mcp-realm-config.json
+      - keycloak_data:/opt/keycloak/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8089/realms/mcp-realm || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  keycloak_data:
