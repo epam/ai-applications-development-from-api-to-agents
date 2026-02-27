@@ -533,7 +533,7 @@
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
                     <!-- arrow goes right from col1 to col2 -->
-                    <div class="arrow-span req right" style="left:50%; right:0; width: calc(100% - 0px);"></div>
+                    <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label req" style="top:-18px; left:0; transform:none;">GET /.well-known/oauth-authorization-server</div>
@@ -544,7 +544,7 @@
             <!-- Arrow 2: Server -> Client response -->
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span res left" style="left:0; right:50%; width:calc(100% - 0px);"></div>
+                    <div class="arrow-span res left" style="left:50%; width:calc(100% + 4px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label res" style="top:-18px; left:0; transform:none;">200 OK — metadata JSON</div>
@@ -629,7 +629,7 @@
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(4,1fr);">
                 <div class="arrow-cell has-line"></div>
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span req right" style="left:50%; width:calc(150% + 4px);"></div>
+                    <div class="arrow-span req right" style="left:50%; width:calc(200% + 8px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label req" style="top:-18px; left:50%; transform:translateX(-50%);">Browser redirect → /authorize?code_challenge=…</div>
@@ -640,7 +640,7 @@
             <!-- Arrow: Auth Server -> User (login page) -->
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(4,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span res left" style="left:0; width:calc(300% + 12px);"></div>
+                    <div class="arrow-span res left" style="left:50%; width:calc(300% + 12px);"></div>
                     <div class="arrow-label res" style="top:-18px; left:50%; transform:translateX(-50%);">302 Redirect → login page</div>
                 </div>
                 <div class="arrow-cell has-line"></div>
@@ -664,7 +664,7 @@
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(4,1fr);">
                 <div class="arrow-cell has-line"></div>
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span res left" style="left:0; width:calc(150% + 4px);"></div>
+                    <div class="arrow-span res left" style="left:50%; width:calc(200% + 8px);"></div>
                     <div class="arrow-label res" style="top:-18px; left:50%; transform:translateX(-50%);">302 → redirect_uri?code=AUTH_CODE&state=…</div>
                 </div>
                 <div class="arrow-cell has-line"></div>
@@ -746,7 +746,7 @@
             <!-- Arrow: Auth -> Client token response -->
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span res left" style="left:0; width:calc(200% + 8px);"></div>
+                    <div class="arrow-span res left" style="left:50%; width:calc(200% + 8px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label res" style="top:-18px; left:50%; transform:translateX(-50%);">200 OK — access_token + refresh_token</div>
@@ -818,7 +818,7 @@
             <!-- Arrow: Client -> MCP call with Bearer -->
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span req right" style="left:50%; width:calc(100%);"></div>
+                    <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label req" style="top:-18px; left:0; transform:none;">POST /mcp  Authorization: Bearer eyJ…</div>
@@ -835,7 +835,7 @@
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line"></div>
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span req right" style="left:50%; width:calc(100%);"></div>
+                    <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label req" style="top:-18px; right:0; left:auto; transform:none;">GET /.well-known/jwks.json  (once, cached)</div>
@@ -845,7 +845,7 @@
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line"></div>
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span res left" style="left:0; width:calc(100%);"></div>
+                    <div class="arrow-span res left" style="left:50%; width:calc(100% + 4px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label res" style="top:-18px; right:0; left:auto; transform:none;">200 OK — { keys: [{kty,n,e,kid…}] }</div>
@@ -860,7 +860,7 @@
             <!-- Arrow: Server -> Client MCP result -->
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span res left" style="left:0; width:calc(100%);"></div>
+                    <div class="arrow-span res left" style="left:50%; width:calc(100% + 4px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label res" style="top:-18px; left:0; transform:none;">200 OK — MCP tool result JSON</div>
@@ -934,7 +934,7 @@
             <!-- Expired call -->
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span req right" style="left:50%; width:calc(100%); background: var(--error);"></div>
+                    <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px); background: var(--error);"></div>
                     <div class="arrow-span req right" style="left:50%; width:calc(100%); opacity:0;"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
@@ -945,7 +945,7 @@
 
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span left" style="left:0; width:calc(100%); background: var(--error);"></div>
+                    <div class="arrow-span left" style="left:50%; width:calc(100% + 4px); background: var(--error);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label error-arrow" style="top:-18px; left:0; transform:none;">401 Unauthorized — token expired</div>
@@ -966,7 +966,7 @@
 
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span res left" style="left:0; width:calc(200% + 8px);"></div>
+                    <div class="arrow-span res left" style="left:50%; width:calc(200% + 8px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label res" style="top:-18px; left:50%; transform:translateX(-50%);">200 OK — new access_token</div>
@@ -977,7 +977,7 @@
             <!-- Retry -->
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span req right" style="left:50%; width:calc(100%);"></div>
+                    <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label req" style="top:-18px; left:0; transform:none;">POST /mcp  (new token) — retry original call</div>
@@ -987,7 +987,7 @@
 
             <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
                 <div class="arrow-cell has-line" style="position:relative;">
-                    <div class="arrow-span res left" style="left:0; width:calc(100%);"></div>
+                    <div class="arrow-span res left" style="left:50%; width:calc(100% + 4px);"></div>
                 </div>
                 <div class="arrow-cell has-line" style="position:relative;">
                     <div class="arrow-label res" style="top:-18px; left:0; transform:none;">200 OK — tool result</div>
