@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP OAuth 2.0 Flow Diagrams</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+        :root {
+            --bg: #0a0c10;
+            --surface: #111318;
+            --surface2: #181c24;
+            --border: #1e2430;
+            --border2: #2a3040;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --dim: #3a4455;
+
+            --client: #38bdf8;
+            --client-bg: #0c2030;
+            --client-border: #1a4060;
+
+            --server: #34d399;
+            --server-bg: #0a2018;
+            --server-border: #1a4030;
+
+            --auth: #f59e0b;
+            --auth-bg: #201508;
+            --auth-border: #40300a;
+
+            --user: #a78bfa;
+            --user-bg: #160f28;
+            --user-border: #30206a;
+
+            --req: #38bdf8;
+            --res: #34d399;
+            --note: #f59e0b;
+            --error: #f87171;
+
+            --arrow: #2a3a4a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            min-height: 100vh;
+            padding: 48px 24px 80px;
+            line-height: 1.5;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .page-header .label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--auth);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .page-header h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--client) 0%, var(--server) 50%, var(--auth) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .page-header p {
+            color: var(--muted);
+            font-size: 15px;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 56px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--muted);
+        }
+
+        .legend-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Section titles */
+        .section-title {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .section-num {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            color: var(--auth);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        /* Diagram wrapper */
+        .diagram-section {
+            margin-bottom: 64px;
+        }
+
+        /* Actors row */
+        .actors {
+            display: grid;
+            gap: 4px;
+            margin-bottom: 0;
+            position: relative;
+        }
+
+        .actors-4 { grid-template-columns: repeat(4, 1fr); }
+        .actors-3 { grid-template-columns: repeat(3, 1fr); }
+
+        .actor {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .actor-box {
+            width: 100%;
+            max-width: 160px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .actor-box.client   { background: var(--client-bg); border-color: var(--client-border); color: var(--client); }
+        .actor-box.server   { background: var(--server-bg); border-color: var(--server-border); color: var(--server); }
+        .actor-box.auth     { background: var(--auth-bg);   border-color: var(--auth-border);   color: var(--auth); }
+        .actor-box.user     { background: var(--user-bg);   border-color: var(--user-border);   color: var(--user); }
+
+        .actor-sub {
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--muted);
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        /* Lifeline */
+        .lifeline-container {
+            display: grid;
+            gap: 4px;
+            position: relative;
+        }
+
+        .lifelines-4 { grid-template-columns: repeat(4, 1fr); }
+        .lifelines-3 { grid-template-columns: repeat(3, 1fr); }
+
+        .lifeline-col {
+            display: flex;
+            justify-content: center;
+        }
+
+        .lifeline {
+            width: 2px;
+            background: repeating-linear-gradient(
+                    to bottom,
+                    var(--border2) 0px,
+                    var(--border2) 6px,
+                    transparent 6px,
+                    transparent 12px
+            );
+        }
+
+        /* Sequence steps */
+        .sequence {
+            position: relative;
+            margin-top: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 4px;
+            position: relative;
+            animation: fadeIn 0.3s ease both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Arrow rows */
+        .arrow-row {
+            display: grid;
+            align-items: center;
+            gap: 4px;
+            height: 44px;
+            position: relative;
+        }
+
+        .arrow-row-4 { grid-template-columns: repeat(4, 1fr); }
+        .arrow-row-3 { grid-template-columns: repeat(3, 1fr); }
+
+        .arrow-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Vertical line continuation in cells */
+        .arrow-cell.has-line::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: repeating-linear-gradient(
+                    to bottom,
+                    var(--border2) 0px,
+                    var(--border2) 6px,
+                    transparent 6px,
+                    transparent 12px
+            );
+            transform: translateX(-50%);
+        }
+
+        /* Horizontal arrow spanning */
+        .arrow-span {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 2px;
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .arrow-span.req { background: var(--req); }
+        .arrow-span.res { background: var(--res); }
+        .arrow-span.note-arrow { background: var(--note); }
+        .arrow-span.error-arrow { background: var(--error); }
+        .arrow-span.dashed {
+            background: none;
+            border-top: 2px dashed;
+        }
+        .arrow-span.dashed.res { border-color: var(--res); }
+        .arrow-span.dashed.req { border-color: var(--req); }
+
+        .arrow-span::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-top: 2px solid;
+            border-right: 2px solid;
+        }
+
+        .arrow-span.right::after {
+            right: -1px;
+            transform: rotate(45deg);
+            border-color: inherit;
+        }
+
+        .arrow-span.left::after {
+            left: -1px;
+            transform: rotate(225deg);
+            border-color: inherit;
+        }
+
+        .arrow-span.req::after { border-color: var(--req); }
+        .arrow-span.res::after { border-color: var(--res); }
+        .arrow-span.note-arrow::after { border-color: var(--note); }
+        .arrow-span.error-arrow::after { border-color: var(--error); }
+
+        /* Label on arrows */
+        .arrow-label {
+            position: absolute;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            white-space: nowrap;
+            pointer-events: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .arrow-label.req { color: var(--req); background: rgba(56,189,248,0.08); }
+        .arrow-label.res { color: var(--res); background: rgba(52,211,153,0.08); }
+        .arrow-label.note-arrow { color: var(--note); background: rgba(245,158,11,0.08); }
+        .arrow-label.error-arrow { color: var(--error); background: rgba(248,113,113,0.08); }
+
+        /* Note boxes */
+        .note-box {
+            margin: 8px 0;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 3px solid;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1.6;
+        }
+
+        .note-box.info  { border-color: var(--client); background: rgba(56,189,248,0.05); color: var(--muted); }
+        .note-box.warn  { border-color: var(--note);   background: rgba(245,158,11,0.05); color: var(--muted); }
+        .note-box.success{ border-color: var(--server); background: rgba(52,211,153,0.05); color: var(--muted); }
+
+        .note-box strong { color: var(--text); }
+
+        /* Group / activation box */
+        .group-label {
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--dim);
+            padding: 6px 0 2px;
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+
+        /* HTTP snippets */
+        .http-block {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+
+        .http-method { color: var(--auth); font-weight: 700; }
+        .http-path { color: var(--client); }
+        .http-header-key { color: var(--server); }
+        .http-header-val { color: var(--muted); }
+        .http-body { color: #c084fc; }
+        .http-comment { color: var(--dim); }
+        .http-status-ok { color: var(--server); font-weight: 700; }
+        .http-status-err { color: var(--error); font-weight: 700; }
+
+        /* Responsive SVG-style diagram using pure CSS/HTML */
+        .flow-wrapper {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px 24px;
+            overflow-x: auto;
+        }
+
+        .min-w { min-width: 700px; }
+
+        /* Two-column layout for HTTP details */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        @media (max-width: 800px) {
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+
+        .detail-card {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .detail-card h4 {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .detail-card h4.req-title { color: var(--req); }
+        .detail-card h4.res-title { color: var(--res); }
+        .detail-card h4.note-title { color: var(--note); }
+        .detail-card h4.err-title  { color: var(--error); }
+
+        /* Step number badge */
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-right: 8px;
+        }
+
+        /* Summary table */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .summary-table th {
+            text-align: left;
+            padding: 8px 12px;
+            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border2);
+        }
+
+        .summary-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .summary-table tr:last-child td { border-bottom: none; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .tag.get   { background: rgba(56,189,248,0.12); color: var(--client); }
+        .tag.post  { background: rgba(245,158,11,0.12); color: var(--auth); }
+        .tag.any   { background: rgba(52,211,153,0.12); color: var(--server); }
+    </style>
+</head>
+<body>
+
+<div class="page-header">
+    <span class="label">MCP Protocol — Reference Guide</span>
+    <h1>OAuth 2.0 + PKCE Flow</h1>
+    <p>Detailed request/response diagrams for MCP server authentication using OAuth 2.1 with PKCE</p>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--client)"></div> MCP Client (your agent)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--server)"></div> MCP Server (FastMCP)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--auth)"></div> Authorization Server (Auth0 / Keycloak)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--user)"></div> User / Browser</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--req)"></div> Request →</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--res)"></div> Response ←</div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ -->
+<!-- DIAGRAM 1: Discovery                        -->
+<!-- ════════════════════════════════════════════ -->
+<div class="diagram-section">
+    <div class="section-title"><span class="section-num">PHASE 1</span> Discovery — Client finds the Auth Server</div>
+
+    <div class="flow-wrapper">
+        <div class="min-w">
+
+            <!-- Actors -->
+            <div class="actors actors-3">
+                <div class="actor"><div class="actor-box client">MCP Client</div><div class="actor-sub">HttpMCPClient</div></div>
+                <div class="actor"><div class="actor-box server">MCP Server</div><div class="actor-sub">FastMCP :8007</div></div>
+                <div class="actor"><div class="actor-box auth">Auth Server</div><div class="actor-sub">Auth0 / Keycloak</div></div>
+            </div>
+
+            <!-- Step 1.1 -->
+            <div style="height:24px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Arrow 1: Client -> Server discovery -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <!-- arrow goes right from col1 to col2 -->
+                    <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label req" style="top:-18px; left:0; transform:none;">GET /.well-known/oauth-authorization-server</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Arrow 2: Server -> Client response -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span res left" style="left:50%; width:calc(100% + 4px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label res" style="top:-18px; left:0; transform:none;">200 OK — metadata JSON</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <div style="height:16px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-card">
+            <h4 class="req-title">→ REQUEST</h4>
+            <div class="http-block">
+                <span class="http-method">GET</span> <span class="http-path">/.well-known/oauth-authorization-server</span>
+                <span class="http-header-key">Host:</span> <span class="http-header-val">localhost:8007</span>
+            </div>
+        </div>
+        <div class="detail-card">
+            <h4 class="res-title">← RESPONSE</h4>
+            <div class="http-block">
+                <span class="http-status-ok">200 OK</span>
+                <span class="http-header-key">Content-Type:</span> <span class="http-header-val">application/json</span>
+
+                <span class="http-body">{
+  "issuer": "https://auth.example.com",
+  "authorization_endpoint":
+    "https://auth.example.com/authorize",
+  "token_endpoint":
+    "https://auth.example.com/oauth/token",
+  "jwks_uri":
+    "https://auth.example.com/.well-known/jwks.json",
+  "scopes_supported": ["mcp:tools", "mcp:read"],
+  "response_types_supported": ["code"],
+  "code_challenge_methods_supported": ["S256"]
+}</span>
+            </div>
+        </div>
+    </div>
+    <div class="note-box info">
+        <strong>Why this matters:</strong> The MCP client does NOT hardcode the auth server URL. It discovers it dynamically from the MCP server. This means you can swap auth providers without changing client code.
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ -->
+<!-- DIAGRAM 2: PKCE Auth Request                -->
+<!-- ════════════════════════════════════════════ -->
+<div class="diagram-section">
+    <div class="section-title"><span class="section-num">PHASE 2</span> PKCE Authorization Request</div>
+
+    <div class="flow-wrapper">
+        <div class="min-w">
+
+            <div class="actors actors-4">
+                <div class="actor"><div class="actor-box user">User / Browser</div><div class="actor-sub">Human or headless</div></div>
+                <div class="actor"><div class="actor-box client">MCP Client</div><div class="actor-sub">HttpMCPClient</div></div>
+                <div class="actor"><div class="actor-box server">MCP Server</div><div class="actor-sub">FastMCP :8007</div></div>
+                <div class="actor"><div class="actor-box auth">Auth Server</div><div class="actor-sub">Auth0 / Keycloak</div></div>
+            </div>
+
+            <div style="height:24px; display:grid; grid-template-columns:repeat(4,1fr);">
+                <div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Client generates PKCE -->
+            <div class="note-box warn" style="margin:0 0 8px 0; font-size:11px;">
+                <strong>Client generates locally:</strong>
+                &nbsp;&nbsp;code_verifier = random(43-128 chars)
+                &nbsp;&nbsp;code_challenge = BASE64URL(SHA256(code_verifier))
+                &nbsp;&nbsp;state = random() &nbsp;← CSRF protection
+            </div>
+
+            <!-- Arrow: Client opens browser -> Auth Server -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(4,1fr);">
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span req right" style="left:50%; width:calc(200% + 8px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label req" style="top:-18px; left:50%; transform:translateX(-50%);">Browser redirect → /authorize?code_challenge=…</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Arrow: Auth Server -> User (login page) -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(4,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span res left" style="left:50%; width:calc(300% + 12px);"></div>
+                    <div class="arrow-label res" style="top:-18px; left:50%; transform:translateX(-50%);">302 Redirect → login page</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Arrow: User submits credentials -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(4,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span req right" style="left:50%; width:calc(300% + 12px);"></div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label req" style="top:-18px; right:0; left:auto; transform:none;">POST credentials + consent</div>
+                </div>
+            </div>
+
+            <!-- Arrow: Auth Server -> Client callback -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(4,1fr);">
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span res left" style="left:50%; width:calc(200% + 8px);"></div>
+                    <div class="arrow-label res" style="top:-18px; left:50%; transform:translateX(-50%);">302 → redirect_uri?code=AUTH_CODE&state=…</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <div style="height:16px; display:grid; grid-template-columns:repeat(4,1fr);">
+                <div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-card">
+            <h4 class="req-title">→ AUTHORIZATION REQUEST (browser redirect)</h4>
+            <div class="http-block">
+                <span class="http-method">GET</span> <span class="http-path">/authorize</span>
+                <span class="http-body">?response_type=code
+  &client_id=my-mcp-client
+  &redirect_uri=http://localhost:9999/callback
+  &scope=mcp:tools
+  &state=xK9mN2pQ
+  &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM
+  &code_challenge_method=S256</span>
+            </div>
+        </div>
+        <div class="detail-card">
+            <h4 class="res-title">← CALLBACK (after user login)</h4>
+            <div class="http-block">
+                <span class="http-method">GET</span> <span class="http-path">http://localhost:9999/callback</span>
+                <span class="http-body">?code=SplxlOBeZQQYbYS6WxSbIA
+  &state=xK9mN2pQ</span>
+
+                <span class="http-comment"># Client MUST verify state matches
+# to prevent CSRF attacks</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ -->
+<!-- DIAGRAM 3: Token Exchange                   -->
+<!-- ════════════════════════════════════════════ -->
+<div class="diagram-section">
+    <div class="section-title"><span class="section-num">PHASE 3</span> Token Exchange (code → access token)</div>
+
+    <div class="flow-wrapper">
+        <div class="min-w">
+
+            <div class="actors actors-3">
+                <div class="actor"><div class="actor-box client">MCP Client</div></div>
+                <div class="actor"><div class="actor-box server">MCP Server</div><div class="actor-sub">not involved here</div></div>
+                <div class="actor"><div class="actor-box auth">Auth Server</div></div>
+            </div>
+
+            <div style="height:24px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Arrow: Client -> Auth token endpoint -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span req right" style="left:50%; width:calc(200% + 8px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label req" style="top:-18px; left:50%; transform:translateX(-50%);">POST /oauth/token  (code + code_verifier)</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Auth server validates -->
+            <div class="note-box warn" style="margin:4px 0; font-size:11px;">
+                <strong>Auth Server validates:</strong>
+                &nbsp; code is valid &amp; not expired &nbsp;|&nbsp; code_verifier hashes to stored code_challenge &nbsp;|&nbsp; client_id matches
+            </div>
+
+            <!-- Arrow: Auth -> Client token response -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span res left" style="left:50%; width:calc(200% + 8px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label res" style="top:-18px; left:50%; transform:translateX(-50%);">200 OK — access_token + refresh_token</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <div style="height:16px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-card">
+            <h4 class="req-title">→ TOKEN REQUEST</h4>
+            <div class="http-block">
+                <span class="http-method">POST</span> <span class="http-path">/oauth/token</span>
+                <span class="http-header-key">Content-Type:</span> <span class="http-header-val">application/x-www-form-urlencoded</span>
+
+                <span class="http-body">grant_type=authorization_code
+&code=SplxlOBeZQQYbYS6WxSbIA
+&redirect_uri=http://localhost:9999/callback
+&client_id=my-mcp-client
+&code_verifier=dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk</span>
+            </div>
+        </div>
+        <div class="detail-card">
+            <h4 class="res-title">← TOKEN RESPONSE</h4>
+            <div class="http-block">
+                <span class="http-status-ok">200 OK</span>
+                <span class="http-header-key">Content-Type:</span> <span class="http-header-val">application/json</span>
+
+                <span class="http-body">{
+  "access_token": "eyJhbGciOiJSUzI1NiJ9…",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "v1.MbU2HT4…",
+  "scope": "mcp:tools"
+}</span>
+            </div>
+        </div>
+    </div>
+    <div class="note-box success">
+        <strong>PKCE security:</strong> Even if the authorization code is intercepted, the attacker can't exchange it — they don't have the <code>code_verifier</code>. This is why PKCE replaces client secrets for public clients like CLI tools.
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ -->
+<!-- DIAGRAM 4: Authenticated MCP call           -->
+<!-- ════════════════════════════════════════════ -->
+<div class="diagram-section">
+    <div class="section-title"><span class="section-num">PHASE 4</span> Authenticated MCP Tool Call</div>
+
+    <div class="flow-wrapper">
+        <div class="min-w">
+
+            <div class="actors actors-3">
+                <div class="actor"><div class="actor-box client">MCP Client</div></div>
+                <div class="actor"><div class="actor-box server">MCP Server</div><div class="actor-sub">JWT middleware</div></div>
+                <div class="actor"><div class="actor-box auth">Auth Server</div><div class="actor-sub">JWKS endpoint</div></div>
+            </div>
+
+            <div style="height:24px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Arrow: Client -> MCP call with Bearer -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label req" style="top:-18px; left:0; transform:none;">POST /mcp  Authorization: Bearer eyJ…</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Server validates JWT (first time: fetch JWKS) -->
+            <div class="note-box warn" style="margin:4px 0; font-size:11px;">
+                <strong>First request only:</strong> MCP Server fetches JWKS from Auth Server to cache public keys
+            </div>
+
+            <!-- Arrow: Server -> Auth JWKS (first time only) -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label req" style="top:-18px; right:0; left:auto; transform:none;">GET /.well-known/jwks.json  (once, cached)</div>
+                </div>
+            </div>
+
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line"></div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span res left" style="left:50%; width:calc(100% + 4px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label res" style="top:-18px; right:0; left:auto; transform:none;">200 OK — { keys: [{kty,n,e,kid…}] }</div>
+                </div>
+            </div>
+
+            <div class="note-box warn" style="margin:4px 0; font-size:11px;">
+                <strong>MCP Server validates locally (no round-trip):</strong>
+                &nbsp; verify JWT signature with cached public key &nbsp;|&nbsp; check exp &nbsp;|&nbsp; check iss &nbsp;|&nbsp; check scope contains "mcp:tools"
+            </div>
+
+            <!-- Arrow: Server -> Client MCP result -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span res left" style="left:50%; width:calc(100% + 4px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label res" style="top:-18px; left:0; transform:none;">200 OK — MCP tool result JSON</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <div style="height:16px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-card">
+            <h4 class="req-title">→ MCP TOOL CALL REQUEST</h4>
+            <div class="http-block">
+                <span class="http-method">POST</span> <span class="http-path">/mcp</span>
+                <span class="http-header-key">Authorization:</span> <span class="http-header-val">Bearer eyJhbGciOiJSUzI1NiJ9…</span>
+                <span class="http-header-key">Content-Type:</span> <span class="http-header-val">application/json</span>
+
+                <span class="http-body">{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "get_user_by_id",
+    "arguments": { "user_id": 42 }
+  }
+}</span>
+            </div>
+        </div>
+        <div class="detail-card">
+            <h4 class="err-title">← 401 WHEN TOKEN INVALID / EXPIRED</h4>
+            <div class="http-block">
+                <span class="http-status-err">401 Unauthorized</span>
+                <span class="http-header-key">WWW-Authenticate:</span> <span class="http-header-val">Bearer error="invalid_token"</span>
+
+                <span class="http-body">{
+  "error": "Unauthorized",
+  "detail": "Token expired or invalid signature"
+}</span>
+
+                <span class="http-comment"># Client must refresh using refresh_token
+# POST /oauth/token
+#   grant_type=refresh_token
+#   refresh_token=v1.MbU2HT4…</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ -->
+<!-- DIAGRAM 5: Token Refresh                    -->
+<!-- ════════════════════════════════════════════ -->
+<div class="diagram-section">
+    <div class="section-title"><span class="section-num">PHASE 5</span> Token Refresh (when access token expires)</div>
+
+    <div class="flow-wrapper">
+        <div class="min-w">
+            <div class="actors actors-3">
+                <div class="actor"><div class="actor-box client">MCP Client</div></div>
+                <div class="actor"><div class="actor-box server">MCP Server</div></div>
+                <div class="actor"><div class="actor-box auth">Auth Server</div></div>
+            </div>
+
+            <div style="height:24px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Expired call -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px); background: var(--error);"></div>
+                    <div class="arrow-span req right" style="left:50%; width:calc(100%); opacity:0;"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label error-arrow" style="top:-18px; left:0; transform:none;">POST /mcp  (expired token)</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span left" style="left:50%; width:calc(100% + 4px); background: var(--error);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label error-arrow" style="top:-18px; left:0; transform:none;">401 Unauthorized — token expired</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Refresh -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span req right" style="left:50%; width:calc(200% + 8px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label req" style="top:-18px; left:50%; transform:translateX(-50%);">POST /oauth/token  grant_type=refresh_token</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span res left" style="left:50%; width:calc(200% + 8px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label res" style="top:-18px; left:50%; transform:translateX(-50%);">200 OK — new access_token</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <!-- Retry -->
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label req" style="top:-18px; left:0; transform:none;">POST /mcp  (new token) — retry original call</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <div style="position:relative; height:44px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-span res left" style="left:50%; width:calc(100% + 4px);"></div>
+                </div>
+                <div class="arrow-cell has-line" style="position:relative;">
+                    <div class="arrow-label res" style="top:-18px; left:0; transform:none;">200 OK — tool result</div>
+                </div>
+                <div class="arrow-cell has-line"></div>
+            </div>
+
+            <div style="height:16px; display:grid; grid-template-columns:repeat(3,1fr);">
+                <div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div><div class="arrow-cell has-line"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ -->
+<!-- Endpoints reference table                   -->
+<!-- ════════════════════════════════════════════ -->
+<div class="diagram-section">
+    <div class="section-title"><span class="section-num">REF</span> All Endpoints at a Glance</div>
+
+    <div class="flow-wrapper">
+        <table class="summary-table">
+            <thead>
+            <tr>
+                <th>Phase</th>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Who calls it</th>
+                <th>Key data</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td style="color:var(--muted)">Discovery</td>
+                <td><span class="tag get">GET</span></td>
+                <td style="color:var(--client); font-size:12px;">/.well-known/oauth-authorization-server</td>
+                <td style="color:var(--muted); font-size:12px;">MCP Client</td>
+                <td style="color:var(--muted); font-size:12px;">Returns auth server URLs</td>
+            </tr>
+            <tr>
+                <td style="color:var(--muted)">Auth</td>
+                <td><span class="tag get">GET</span></td>
+                <td style="color:var(--auth); font-size:12px;">/authorize</td>
+                <td style="color:var(--muted); font-size:12px;">Browser (redirect)</td>
+                <td style="color:var(--muted); font-size:12px;">code_challenge, scope, state</td>
+            </tr>
+            <tr>
+                <td style="color:var(--muted)">Auth</td>
+                <td><span class="tag post">POST</span></td>
+                <td style="color:var(--auth); font-size:12px;">/oauth/token</td>
+                <td style="color:var(--muted); font-size:12px;">MCP Client</td>
+                <td style="color:var(--muted); font-size:12px;">code + code_verifier → access_token</td>
+            </tr>
+            <tr>
+                <td style="color:var(--muted)">Validation</td>
+                <td><span class="tag get">GET</span></td>
+                <td style="color:var(--auth); font-size:12px;">/.well-known/jwks.json</td>
+                <td style="color:var(--muted); font-size:12px;">MCP Server (once)</td>
+                <td style="color:var(--muted); font-size:12px;">Public keys to verify JWTs</td>
+            </tr>
+            <tr>
+                <td style="color:var(--muted)">Tool Call</td>
+                <td><span class="tag post">POST</span></td>
+                <td style="color:var(--server); font-size:12px;">/mcp</td>
+                <td style="color:var(--muted); font-size:12px;">MCP Client</td>
+                <td style="color:var(--muted); font-size:12px;">Authorization: Bearer &lt;JWT&gt;</td>
+            </tr>
+            <tr>
+                <td style="color:var(--muted)">Refresh</td>
+                <td><span class="tag post">POST</span></td>
+                <td style="color:var(--auth); font-size:12px;">/oauth/token</td>
+                <td style="color:var(--muted); font-size:12px;">MCP Client</td>
+                <td style="color:var(--muted); font-size:12px;">grant_type=refresh_token</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
