@@ -13,6 +13,8 @@ By exploring and working with this project, you will learn:
 - How to validate JWT tokens (signature, issuer, expiry, roles) on the server side
 - How to build an MCP client that transparently handles token refresh
 
+### If the task in the main branch is hard for you, switch to the `main-detailed` branch
+
 ---
 
 ## Infrastructure Setup
