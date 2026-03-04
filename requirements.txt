@@ -2,14 +2,14 @@ requests==2.32.5
 aiohttp==3.13.3
 httpx==0.28.1
 
-openai==2.20.0
-anthropic>=0.79.0
-google-genai==1.62.0
-protobuf==6.33.5
+openai==2.24.0
+anthropic>=0.84.0
+google-genai==1.65.0
+protobuf==7.34.0
 
 fastmcp==3.0.2
 redis[hiredis]==7.1.1
-fastapi==0.128.7
+fastapi==0.135.1
 
 langchain-community==0.4.1
 langchain-openai==1.1.10
@@ -19,4 +19,5 @@ psycopg2-binary>=2.9.11
 presidio-analyzer==2.2.360
 presidio_anonymizer==2.2.360
 pydantic==2.12.5
+pyyaml>=6.0
 python-jose==3.5.0
