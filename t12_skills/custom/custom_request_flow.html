@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Agent — Communication Flow</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+        :root {
+            --bg: #0a0c10;
+            --surface: #111318;
+            --surface2: #181c24;
+            --border: #1e2430;
+            --border2: #2a3040;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --dim: #e2e8f0;
+
+            --user: #a78bfa;
+            --user-bg: #160f28;
+            --user-border: #30206a;
+
+            --app: #38bdf8;
+            --app-bg: #0c2030;
+            --app-border: #1a4060;
+
+            --model: #34d399;
+            --model-bg: #0a2018;
+            --model-border: #1a4030;
+
+            --req: #38bdf8;
+            --res: #34d399;
+            --tool: #f59e0b;
+            --tool-bg: #201508;
+            --tool-border: #40300a;
+            --purple: #c084fc;
+
+            --arrow: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            min-height: 100vh;
+            padding: 48px 24px 80px;
+            line-height: 1.5;
+        }
+
+        .content-wrap {
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .page-header .label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--tool);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .page-header h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--user) 0%, var(--app) 50%, var(--model) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .page-header p {
+            color: var(--muted);
+            font-size: 15px;
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        .legend {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 56px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--muted);
+        }
+
+        .legend-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-line {
+            width: 24px; height: 2px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .section-num {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            color: var(--tool);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        .diagram-section { margin-bottom: 64px; }
+
+        .actors {
+            display: grid;
+            gap: 4px;
+            margin-bottom: 0;
+        }
+
+        .actors-3 { grid-template-columns: repeat(3, 1fr); }
+
+        .actor {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .actor-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .actor-box {
+            width: 100%;
+            max-width: 170px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .actor-box.user   { background: var(--user-bg);  border-color: var(--user-border);  color: var(--user); }
+        .actor-box.app    { background: var(--app-bg);   border-color: var(--app-border);   color: var(--app); }
+        .actor-box.model  { background: var(--model-bg); border-color: var(--model-border); color: var(--model); }
+
+        .actor-sub {
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--muted);
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .flow-wrapper {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px 24px;
+            overflow-x: auto;
+        }
+
+        .min-w { min-width: 600px; }
+
+        /* Arrow rows */
+        .arrow-row {
+            display: grid;
+            align-items: center;
+            gap: 4px;
+            height: 52px;
+            position: relative;
+        }
+
+        .arrow-row-3 { grid-template-columns: repeat(3, 1fr); }
+
+        .arrow-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            position: relative;
+        }
+
+        .arrow-cell.has-line::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: repeating-linear-gradient(
+                    to bottom,
+                    var(--border2) 0px,
+                    var(--border2) 6px,
+                    transparent 6px,
+                    transparent 12px
+            );
+            transform: translateX(-50%);
+        }
+
+        .arrow-span {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 2px;
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .arrow-span.req   { background: var(--req); }
+        .arrow-span.res   { background: var(--res); }
+        .arrow-span.tool  { background: var(--tool); }
+        .arrow-span.purple{ background: var(--purple); }
+
+        .arrow-span.dashed { background: none; border-top: 2px dashed; }
+        .arrow-span.dashed.res    { border-color: var(--res); }
+        .arrow-span.dashed.tool   { border-color: var(--tool); }
+        .arrow-span.dashed.purple { border-color: var(--purple); }
+
+        .arrow-span::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-top: 2px solid;
+            border-right: 2px solid;
+        }
+
+        .arrow-span.right::after { right: -1px; transform: rotate(45deg); }
+        .arrow-span.left::after  { left: -1px;  transform: rotate(225deg); }
+
+        .arrow-span.req::after    { border-color: var(--req); }
+        .arrow-span.res::after    { border-color: var(--res); }
+        .arrow-span.tool::after   { border-color: var(--tool); }
+        .arrow-span.purple::after { border-color: var(--purple); }
+
+        /* ── In-flow label row (above every arrow row) ── */
+        .label-row {
+            display: grid;
+            gap: 4px;
+            height: 22px;
+            align-items: center;
+        }
+        .label-row-3 { grid-template-columns: repeat(3, 1fr); }
+
+        /* Lifeline cell inside label rows */
+        .lc {
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .lc.has-line::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: repeating-linear-gradient(
+                    to bottom,
+                    var(--border2) 0px,
+                    var(--border2) 6px,
+                    transparent 6px,
+                    transparent 12px
+            );
+            transform: translateX(-50%);
+        }
+
+        /* The actual text tag */
+        .lc-label {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 1px 7px;
+            border-radius: 4px;
+            white-space: nowrap;
+            position: relative;
+            z-index: 5;
+            line-height: 1.6;
+        }
+        .lc-label.req    { color: var(--req);    background: rgba(56,189,248,0.09); }
+        .lc-label.res    { color: var(--res);    background: rgba(52,211,153,0.09); }
+        .lc-label.tool   { color: var(--tool);   background: rgba(245,158,11,0.09); }
+        .lc-label.purple { color: var(--purple); background: rgba(192,132,252,0.09); }
+
+        /* Step number badge on left — now anchored to arrow row */
+        .step-num {
+            position: absolute;
+            left: -36px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            z-index: 10;
+        }
+
+        .step-num.req    { background: rgba(56,189,248,0.15);  color: var(--req);    border: 1px solid rgba(56,189,248,0.3); }
+        .step-num.res    { background: rgba(52,211,153,0.15);  color: var(--res);    border: 1px solid rgba(52,211,153,0.3); }
+        .step-num.tool   { background: rgba(245,158,11,0.15);  color: var(--tool);   border: 1px solid rgba(245,158,11,0.3); }
+        .step-num.purple { background: rgba(192,132,252,0.15); color: var(--purple); border: 1px solid rgba(192,132,252,0.3); }
+
+        .group-label {
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--dim);
+            padding: 8px 0 2px;
+            border-top: 1px solid var(--border);
+            margin-top: 6px;
+            margin-bottom: 4px;
+        }
+
+        .group-label:first-child { border-top: none; margin-top: 0; }
+
+        .note-box {
+            margin: 16px 0 0;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 3px solid;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1.6;
+        }
+
+        .note-box.info    { border-color: var(--app);   background: rgba(56,189,248,0.05);  color: var(--muted); }
+        .note-box.warn    { border-color: var(--tool);  background: rgba(245,158,11,0.05);  color: var(--muted); }
+        .note-box.success { border-color: var(--model); background: rgba(52,211,153,0.05);  color: var(--muted); }
+        .note-box.purple  { border-color: var(--purple);background: rgba(192,132,252,0.05); color: var(--muted); }
+
+        .note-box strong { color: var(--text); }
+
+        /* skill tree */
+        .skill-tree {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 2;
+            color: var(--muted);
+        }
+
+        .skill-tree .dir  { color: var(--app); }
+        .skill-tree .file { color: var(--res); }
+        .skill-tree .key  { color: var(--tool); }
+
+        /* code block */
+        .code-block {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            line-height: 1.8;
+            overflow-x: auto;
+            color: var(--muted);
+        }
+
+        .code-block .xml-tag  { color: var(--app); }
+        .code-block .xml-attr { color: var(--tool); }
+        .code-block .xml-val  { color: var(--res); }
+        .code-block .xml-text { color: var(--muted); }
+        .code-block .fn-name  { color: var(--purple); }
+        .code-block .fn-arg   { color: var(--res); }
+        .code-block .fn-str   { color: var(--tool); }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 800px) {
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+
+        .detail-card {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .detail-card h4 {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .detail-card h4.req-title    { color: var(--req); }
+        .detail-card h4.res-title    { color: var(--res); }
+        .detail-card h4.tool-title   { color: var(--tool); }
+        .detail-card h4.purple-title { color: var(--purple); }
+
+        .spacer { height: 16px; display: grid; grid-template-columns: repeat(3,1fr); }
+        .spacer > div { }
+    </style>
+</head>
+<body>
+<div class="content-wrap">
+
+    <div class="page-header">
+        <span class="label">Skills Agent — Reference Guide</span>
+        <h1>Skill Execution Flow</h1>
+        <p>How User, Application, and Orchestration Model collaborate to discover, load, and execute agent skills</p>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--user)"></div> User</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--app)"></div> Application</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--model)"></div> Orchestration Model</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--req)"></div> Request / User message</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--tool)"></div> Tool call</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--purple)"></div> Tool result</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--res)"></div> Final response</div>
+    </div>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!-- MAIN FLOW                                    -->
+    <!-- ════════════════════════════════════════════ -->
+    <div class="diagram-section">
+        <div class="section-title"><span class="section-num">FLOW</span> Full Skill Execution Sequence</div>
+
+        <div class="flow-wrapper">
+            <div class="min-w" style="position:relative; padding-left:44px;">
+
+                <!-- ACTORS -->
+                <div class="actors actors-3">
+                    <div class="actor">
+                        <div class="actor-icon">👤</div>
+                        <div class="actor-box user">User</div>
+                        <div class="actor-sub">end-user</div>
+                    </div>
+                    <div class="actor">
+                        <div class="actor-icon">⚙️</div>
+                        <div class="actor-box app">Application</div>
+                        <div class="actor-sub">T12Agent / custom_app.py</div>
+                    </div>
+                    <div class="actor">
+                        <div class="actor-icon">🧠</div>
+                        <div class="actor-box model">Orchestration Model</div>
+                        <div class="actor-sub">LLM (gpt / claude)</div>
+                    </div>
+                </div>
+
+                <!-- lifeline spacer -->
+                <div class="spacer" style="height:20px;">
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- ── GROUP: Initialization ── -->
+                <div class="group-label">① Initialization</div>
+
+                <!-- Step 1: user → app -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"><span class="lc-label req">User request (natural language)</span></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="position:relative;">
+                    <div class="step-num req">1</div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- Step 2: app internal — inject XML -->
+                <div class="label-row label-row-3" style="height:30px;">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line" style="justify-content:center;">
+                        <div style="background:rgba(245,158,11,0.07); border:1px dashed rgba(245,158,11,0.3); border-radius:5px; padding:2px 10px; font-size:10px; font-family:'JetBrains Mono',monospace; color:var(--tool); white-space:nowrap; z-index:5; position:relative;">
+                            load_skills() → build XML system prompt
+                        </div>
+                    </div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="height:18px; position:relative;">
+                    <div class="step-num tool">2</div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- Step 3: app → model -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"><span class="lc-label req">chat.completions.create(system + user)</span></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="position:relative;">
+                    <div class="step-num req">3</div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span req right" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- ── GROUP: Skill Discovery ── -->
+                <div class="group-label">② Skill Discovery — read_skill</div>
+
+                <!-- Step 4: model → app (tool call SKILL.md) -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"><span class="lc-label tool">tool_call: read_skill("/sample/SKILL.md")</span></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="position:relative;">
+                    <div class="step-num tool">4</div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span tool left" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- Step 5: app → model (tool result SKILL.md) -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"><span class="lc-label purple">tool_result: SKILL.md content</span></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="position:relative;">
+                    <div class="step-num purple">5</div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span purple right" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- ── GROUP: Load Additional Resources ── -->
+                <div class="group-label">③ Load Additional Resources — parallel read_skill calls</div>
+
+                <!-- Step 6a: model → app EXAMPLE.md -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"><span class="lc-label tool">tool_call: read_skill("/sample/EXAMPLE.md")</span></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="height:28px; position:relative;">
+                    <div class="step-num tool">6</div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span tool left" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- Step 6b: model → app sample.py (parallel, dashed) -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"><span class="lc-label tool">tool_call: read_skill("/sample/script/sample.py")</span></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="height:28px;">
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span dashed tool left" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- Step 7: app → model (both tool results) -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"><span class="lc-label purple">tool_result ×2: EXAMPLE.md + sample.py content</span></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="position:relative;">
+                    <div class="step-num purple">7</div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span purple right" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- ── GROUP: Code Execution ── -->
+                <div class="group-label">④ Code Execution — execute_code (MCP)</div>
+
+                <!-- Step 8: model → app execute_code -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"><span class="lc-label tool">tool_call: execute_code(script_path, code)</span></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="position:relative;">
+                    <div class="step-num tool">8</div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span tool left" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- Step 9: app → model execution result -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"><span class="lc-label purple">tool_result: execution output / stdout</span></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="position:relative;">
+                    <div class="step-num purple">9</div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span purple right" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- ── GROUP: Final Response ── -->
+                <div class="group-label">⑤ Final Response</div>
+
+                <!-- Step 10: model → app final message -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"><span class="lc-label res">assistant message (finish_reason=stop)</span></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="position:relative;">
+                    <div class="step-num res">10</div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span res left" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- Step 11: app → user -->
+                <div class="label-row label-row-3">
+                    <div class="lc has-line"><span class="lc-label res">Final answer displayed to user</span></div>
+                    <div class="lc has-line"></div>
+                    <div class="lc has-line"></div>
+                </div>
+                <div class="arrow-row arrow-row-3" style="position:relative;">
+                    <div class="step-num res">11</div>
+                    <div class="arrow-cell has-line" style="position:relative;">
+                        <div class="arrow-span res left" style="left:50%; width:calc(100% + 4px);"></div>
+                    </div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+                <!-- bottom spacer -->
+                <div class="spacer" style="height:20px;">
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line"></div>
+                    <div class="arrow-cell has-line"></div>
+                </div>
+
+            </div><!-- /min-w -->
+        </div><!-- /flow-wrapper -->
+    </div>
+
+
+    <!-- ════════════════════════════════════════════ -->
+    <!-- Skill Structure                             -->
+    <!-- ════════════════════════════════════════════ -->
+    <div class="diagram-section">
+        <div class="section-title"><span class="section-num">REF</span> Skill Directory Structure</div>
+
+        <div class="detail-grid">
+            <div class="detail-card">
+                <h4 class="tool-title">→ SKILL FILESYSTEM LAYOUT</h4>
+                <div class="skill-tree">
+                    <span class="dir">sample/</span><br>
+                    &nbsp;&nbsp;├── <span class="key">SKILL.md</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--dim)">← step 4 — instructions</span><br>
+                    &nbsp;&nbsp;├── <span class="file">EXAMPLE.md</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--dim)">← step 6 — usage examples</span><br>
+                    &nbsp;&nbsp;├── <span class="dir">script/</span><br>
+                    &nbsp;&nbsp;│&nbsp;&nbsp; └── <span class="file">sample.py</span>&nbsp;&nbsp;&nbsp;<span style="color:var(--dim)">← step 6 — script to run</span><br>
+                    &nbsp;&nbsp;└── <span class="dir">references/</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── <span class="file">FORMS.md</span>&nbsp;&nbsp;&nbsp;<span style="color:var(--dim)">← optional reference</span>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h4 class="req-title">→ SYSTEM PROMPT INJECTION (step 2)</h4>
+                <div class="code-block">
+                    <span class="xml-tag">&lt;available_skills&gt;</span><br>
+                    &nbsp;&nbsp;<span class="xml-tag">&lt;skill</span> <span class="xml-attr">name=</span><span class="xml-val">"sample"</span><span class="xml-tag">&gt;</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="xml-tag">&lt;description&gt;</span><span class="xml-text">Does X, Y, Z</span><span class="xml-tag">&lt;/description&gt;</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="xml-tag">&lt;license&gt;</span><span class="xml-text">MIT</span><span class="xml-tag">&lt;/license&gt;</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="xml-tag">&lt;allowed-tools&gt;</span><span class="xml-text">read_skill execute_code</span><span class="xml-tag">&lt;/allowed-tools&gt;</span><br>
+                    &nbsp;&nbsp;<span class="xml-tag">&lt;/skill&gt;</span><br>
+                    <span class="xml-tag">&lt;/available_skills&gt;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <div class="detail-card">
+                <h4 class="purple-title">← TOOL CALL SCHEMA: read_skill</h4>
+                <div class="code-block">
+                    <span class="fn-name">read_skill</span>(<br>
+                    &nbsp;&nbsp;<span class="fn-arg">path</span>: <span class="fn-str">"/sample/SKILL.md"</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--dim)">// relative to SKILLS_DIR</span><br>
+                    )<br><br>
+                    <span style="color:var(--dim)">→ returns file contents as string</span><br>
+                    <span style="color:var(--dim)">→ model calls again for any</span><br>
+                    <span style="color:var(--dim)">&nbsp;&nbsp; referenced file in SKILL.md</span>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h4 class="tool-title">← TOOL CALL SCHEMA: execute_code</h4>
+                <div class="code-block">
+                    <span class="fn-name">execute_code</span>(<br>
+                    &nbsp;&nbsp;<span class="fn-arg">script_path</span>: <span class="fn-str">"/sample/script/sample.py"</span>,<br>
+                    &nbsp;&nbsp;<span class="fn-arg">code</span>: <span class="fn-str">"result = run(input_data)"</span>,<br>
+                    &nbsp;&nbsp;<span class="fn-arg">session_id</span>: <span class="fn-str">"abc123"</span><br>
+                    )<br><br>
+                    <span style="color:var(--dim)">→ file content prepended to code</span><br>
+                    <span style="color:var(--dim)">→ runs in Jupyter kernel via MCP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════ -->
+    <!-- Notes                                       -->
+    <!-- ════════════════════════════════════════════ -->
+    <div class="diagram-section">
+        <div class="section-title"><span class="section-num">NOTES</span> Key Design Decisions</div>
+
+        <div class="note-box info">
+            <strong>Step 2 — Skills injected as XML, not raw text.</strong><br>
+            <code>_build_available_skills_xml()</code> serialises each skill's name, description, license, compatibility, and allowed-tools into structured XML so the model can reason about which skill to pick without reading every SKILL.md upfront.
+        </div>
+
+        <div class="note-box warn" style="margin-top:12px;">
+            <strong>Steps 6–7 — Model may emit multiple tool calls in one turn.</strong><br>
+            The model can request EXAMPLE.md and script/sample.py in the same completion turn. Application dispatches them concurrently in <code>_dispatch_tool_calls()</code> and returns all results in a single tool-message batch before the next LLM call.
+        </div>
+
+        <div class="note-box purple" style="margin-top:12px;">
+            <strong>Step 8 — execute_code merges script + inline code.</strong><br>
+            <code>PythonCodeInterpreterTool._execute()</code> prepends the content of <code>script_path</code> to the model's <code>code</code> argument before forwarding to the MCP Jupyter kernel — keeping the skill's helper functions in scope.
+        </div>
+
+        <div class="note-box success" style="margin-top:12px;">
+            <strong>Steps 10–11 — Stateful conversation loop.</strong><br>
+            Both the assistant message and all tool messages are appended to <code>messages[]</code> before the next turn, preserving full context. The loop in <code>main()</code> continues until the user types "exit".
+        </div>
+    </div>
+
+</div><!-- /content-wrap -->
+</body>
+</html>
