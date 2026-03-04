@@ -1,13 +1,12 @@
 ---
-name: unit-converter
-description: >
-  # TODO: Write when the agent should activate this skill.
-  # Cover: what unit categories it handles and what user actions trigger it.
-license: Apache-2.0
-metadata:
-  author: ai-powered-apps-development-expert
-  version: "1.0"
-allowed-tools: execute_code
+# TODO:
+# Provide name as unit-converter;
+# Provide description: Write when the agent should activate this skill. Cover: what unit categories it handles and what user actions trigger it.
+# License is Apache-2.0
+# Metadata: 
+#    - Author is ai-powered-apps-development-expert
+#    - version is 1.0
+# And allowed tools is execute_code
 ---
 
 # Unit Converter

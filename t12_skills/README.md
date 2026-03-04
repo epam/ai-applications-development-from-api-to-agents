@@ -5,6 +5,8 @@ packaged as files (instructions, scripts, references). You will implement skill-
 OpenAI,
 and then build a **custom agent** that loads and executes skills entirely on your own infrastructure.
 
+[Agent skills specification](https://agentskills.io/specification)
+
 ### If the task in the main branch is hard for you, switch to the `main-detailed` branch
 
 ---
@@ -133,12 +135,12 @@ Python Code Interpreter will provide only one tool:
 
 ### Task
 
-1. Open [custom/tools/skills/read_skill_tool.py](custom/tools/skills/read_skill_tool.py) and implement all `TODO`
-2.   Open [custom/tools/py_interpreter/python_code_interpreter_tool.py](custom/tools/py_interpreter/python_code_interpreter_tool.py)
-   and implement all `TODO` 
-3. Open [custom/agent.py](custom/agent.py) and implement all `TODO`
-4. Open [custom/custom_app.py](custom/custom_app.py) and implement all `TODO`
-5. Make sure the MCP server is running, then run [custom/custom_app.py](custom/custom_app.py) and test it using the **Convertor** sample
+1. Implement all TODO in [custom/_skills/SKILL.md](custom/_skills/unit-converter/SKILL.md)
+2. Open [custom/tools/skills/read_skill_tool.py](custom/tools/skills/read_skill_tool.py) and implement all `TODO`
+3. Open [custom/tools/py_interpreter/python_code_interpreter_tool.py](custom/tools/py_interpreter/python_code_interpreter_tool.py) and implement all `TODO` 
+4. Open [custom/agent.py](custom/agent.py) and implement all `TODO`
+5. Open [custom/custom_app.py](custom/custom_app.py) and implement all `TODO`
+6. Make sure the MCP server is running, then run [custom/custom_app.py](custom/custom_app.py) and test it using the **Convertor** sample
    requests below.
 
 ### Sample Requests: Convertor
