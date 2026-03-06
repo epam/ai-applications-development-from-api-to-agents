@@ -37,6 +37,8 @@ end, when you do use frameworks, you'll understand exactly what's happening unde
 
 > 🤝 Need help along the way? Join the [DIALX Community on Discord](https://discord.com/invite/ukzj9U9tEe) — we have dedicated course support channels. After joining, add the role shown below to unlock them.
 
+> 🚨 Pay attention that in the course we have repetitive tasks (to create agent, clients, etc.) — it's done intentionally!
+
 ## Branches Structure
 
 - `main` - tasks with descriptions
