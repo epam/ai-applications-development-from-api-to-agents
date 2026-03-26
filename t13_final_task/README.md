@@ -1,6 +1,6 @@
 # Final Task: Users Management Agent
 
-In this task, you will build a **production-ready Agent** with the Tool Use pattern connected to several MCP servers, 
+In this task, you will build a **production-ready Agent** with the Tool Use pattern connected to several MCP servers,
 equipped with skills and Users PII protection (guardrail).
 The agent supports both streaming and non-streaming responses, stores all conversations in Redis, and serves a
 browser-based chat UI.
@@ -155,5 +155,4 @@ before they are added to the conversation history:
 
 ---
 
-**Congratulations! You've built a production-ready streaming agent backed by multiple MCP servers, Redis persistence,
-a browser UI, and PII guardrails.**
+**Congratulations! You've built an agent backed by multiple MCP servers, Redis persistence, a browser UI, and PII guardrails.**
