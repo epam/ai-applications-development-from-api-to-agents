@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Client</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s;
+        }
+
+        .sidebar.collapsed {
+            margin-left: -280px;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .new-chat-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .new-chat-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .conversation-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .conversation-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateX(2px);
+        }
+
+        .conversation-item.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .conversation-title {
+            font-weight: 500;
+            color: #212529;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .conversation-meta {
+            font-size: 12px;
+            color: #6c757d;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .delete-conversation {
+            padding: 2px 8px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .conversation-item:hover .delete-conversation {
+            opacity: 1;
+        }
+
+        .delete-conversation:hover {
+            background: #c82333;
+        }
+
+        .toggle-sidebar {
+            position: absolute;
+            left: 1px;
+            top: 20px;
+            z-index: 1000;
+            padding: 8px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s;
+        }
+
+        .sidebar.collapsed ~ .main-container .toggle-sidebar {
+            left: 0;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            position: relative;
+        }
+
+        .chat-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            margin: 20px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #6c757d;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            max-width: 400px;
+        }
+
+        .message {
+            display: flex;
+            animation: slideIn 0.3s ease-out;
+            margin-bottom: 2px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.assistant {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 85%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.assistant .message-bubble {
+            background: #f1f3f5;
+            color: #212529;
+        }
+
+        .message-bubble h1,
+        .message-bubble h2,
+        .message-bubble h3,
+        .message-bubble h4,
+        .message-bubble h5,
+        .message-bubble h6 {
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .message-bubble h1 { font-size: 1.8em; }
+        .message-bubble h2 { font-size: 1.5em; }
+        .message-bubble h3 { font-size: 1.3em; }
+        .message-bubble h4 { font-size: 1.1em; }
+
+        .message-bubble p {
+            margin: 8px 0;
+        }
+
+        .message-bubble ul,
+        .message-bubble ol {
+            margin: 8px 0;
+            padding-left: 24px;
+        }
+
+        .message-bubble code {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .message-bubble pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 18px;
+            background: #f1f3f5;
+            border-radius: 18px;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #adb5bd;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 12px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 24px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #messageInput:focus {
+            border-color: #667eea;
+        }
+
+        #sendButton {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #sendButton:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        #sendButton:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                z-index: 100;
+                height: 100%;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .chat-container {
+                margin: 10px;
+            }
+
+            .message-bubble {
+                max-width: 80%;
+            }
+
+            .messages-container,
+            .input-container {
+                max-width: 100%;
+            }
+        }
+
+        /* Tool History */
+        .tool-history-container {
+            display: flex;
+            justify-content: flex-start;
+            margin: 4px 0 2px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .tool-history-wrapper {
+            max-width: 85%;
+        }
+
+        .tool-history-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #4338ca;
+            font-weight: 500;
+            transition: background 0.2s;
+            user-select: none;
+        }
+
+        .tool-history-toggle:hover {
+            background: #c7d2fe;
+        }
+
+        .tool-history-chevron {
+            font-size: 9px;
+            transition: transform 0.2s;
+        }
+
+        .tool-history-panel {
+            display: none;
+            margin-top: 6px;
+            border: 1px solid #c7d2fe;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .tool-history-panel.open {
+            display: block;
+        }
+
+        .tool-activity-item {
+            padding: 10px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 12px;
+        }
+
+        .tool-activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .tool-call-item {
+            background: #f5f3ff;
+        }
+
+        .tool-result-item {
+            background: #f0fdf4;
+        }
+
+        .tool-activity-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .tool-activity-body pre {
+            margin: 0;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #4b5563;
+            max-height: 180px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 6px 8px;
+            border-radius: 4px;
+        }
+
+        .tool-calling-bubble {
+            background: #eef2ff !important;
+            color: #4338ca !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            border: 1px solid #c7d2fe;
+        }
+
+        .tool-calling-spinner {
+            width: 12px;
+            height: 12px;
+            border: 2px solid #c7d2fe;
+            border-top-color: #4338ca;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <span class="sidebar-title">Conversations</span>
+        <button class="new-chat-btn" id="newChatBtn">+ New Chat</button>
+    </div>
+    <div class="conversations-list" id="conversationsList">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <button class="toggle-sidebar" id="toggleSidebar">☰</button>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            UMS Agent
+        </div>
+        <div class="messages-container" id="messagesContainer">
+            <div class="empty-state">
+                <div class="empty-state-icon">💬</div>
+                <div class="empty-state-title">Start a New Conversation</div>
+                <div class="empty-state-text">
+                    Select a conversation from the sidebar or start a new one to begin chatting.
+                </div>
+            </div>
+        </div>
+        <div class="input-container">
+            <input
+                    type="text"
+                    id="messageInput"
+                    placeholder="Type your message..."
+                    autocomplete="off"
+            >
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    const API_URL = 'http://localhost:8011';
+    const messagesContainer = document.getElementById('messagesContainer');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const conversationsList = document.getElementById('conversationsList');
+    const newChatBtn = document.getElementById('newChatBtn');
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+
+    let currentConversationId = null;
+    let conversationHistory = [];
+    let isStreaming = false;
+
+    marked.setOptions({
+        breaks: true,
+        gfm: true
+    });
+
+    toggleSidebar.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+    });
+
+    async function loadConversations() {
+        try {
+            // TODO:
+            // Send a GET request to API_URL + "/conversations".
+            // Parse the JSON response body — it returns an array of conversation summary objects,
+            // each containing id, title, message_count, created_at, updated_at.
+            // Store the result in a local "conversations" variable used by the rendering logic below.
+            const conversations = [];
+
+            conversationsList.innerHTML = '';
+
+            if (conversations.length === 0) {
+                conversationsList.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #6c757d;">
+                        No conversations yet. Click "New Chat" to start!
+                    </div>
+                `;
+            } else {
+                conversations.forEach(conv => {
+                    addConversationToSidebar(conv);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading conversations:', error);
+            conversationsList.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #dc3545;">
+                    Error loading conversations
+                </div>
+            `;
+        }
+    }
+
+    function addConversationToSidebar(conversation) {
+        const convElement = document.createElement('div');
+        convElement.className = 'conversation-item';
+        convElement.dataset.conversationId = conversation.id;
+
+        if (conversation.id === currentConversationId) {
+            convElement.classList.add('active');
+        }
+
+        const date = new Date(conversation.updated_at);
+        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        convElement.innerHTML = `
+            <div class="conversation-title">${conversation.title}</div>
+            <div class="conversation-meta">
+                <span>${conversation.message_count || 0} messages</span>
+                <button class="delete-conversation" onclick="deleteConversation(event, '${conversation.id}')">Delete</button>
+            </div>
+            <div class="conversation-meta">
+                <span>${dateStr}</span>
+            </div>
+        `;
+
+        convElement.onclick = (e) => {
+            if (!e.target.classList.contains('delete-conversation')) {
+                loadConversation(conversation.id);
+            }
+        };
+
+        conversationsList.appendChild(convElement);
+    }
+
+    async function loadConversation(conversationId) {
+        try {
+            // TODO:
+            // Send a GET request to API_URL + "/conversations/" + conversationId.
+            // If the response is not ok, throw an error.
+            // Parse the JSON response body — it returns the full conversation object including a "messages" array.
+            // Set currentConversationId to the given conversationId.
+            // Populate conversationHistory from conversation.messages (default to empty array if missing).
+
+            updateActiveConversation();
+            renderMessages();
+        } catch (error) {
+            console.error('Error loading conversation:', error);
+        }
+    }
+
+    function updateActiveConversation() {
+        document.querySelectorAll('.conversation-item').forEach(item => {
+            if (item.dataset.conversationId === currentConversationId) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+
+    function renderMessages() {
+        messagesContainer.innerHTML = '';
+
+        const msgs = conversationHistory.filter(msg => msg.role !== 'system');
+
+        const hasVisible = msgs.some(m =>
+            (m.role === 'user' || m.role === 'assistant') && m.content && m.content.trim()
+        );
+
+        if (!hasVisible) {
+            messagesContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">💬</div>
+                    <div class="empty-state-title">Start Chatting</div>
+                    <div class="empty-state-text">
+                        Type a message below to start the conversation.
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        let i = 0;
+        while (i < msgs.length) {
+            const msg = msgs[i];
+
+            if (msg.role === 'user') {
+                addMessage('user', msg.content, false, false);
+                i++;
+                continue;
+            }
+
+            if (msg.role === 'assistant') {
+                const hasToolCalls = msg.tool_calls && msg.tool_calls.length > 0;
+
+                if (!hasToolCalls) {
+                    if (msg.content && msg.content.trim()) {
+                        addMessage('assistant', msg.content, false, true);
+                    }
+                    i++;
+                    continue;
+                }
+
+                // Collect all tool-call rounds into one activity list
+                const activity = [];
+                while (i < msgs.length && msgs[i].role === 'assistant' && msgs[i].tool_calls && msgs[i].tool_calls.length > 0) {
+                    for (const tc of msgs[i].tool_calls) {
+                        try {
+                            const args = typeof tc.function.arguments === 'string'
+                                ? JSON.parse(tc.function.arguments)
+                                : tc.function.arguments;
+                            activity.push({ type: 'call', name: tc.function.name, arguments: args });
+                        } catch {
+                            activity.push({ type: 'call', name: tc.function.name, arguments: {} });
+                        }
+                    }
+                    i++;
+                    while (i < msgs.length && msgs[i].role === 'tool') {
+                        activity.push({ type: 'result', name: '', content: msgs[i].content });
+                        i++;
+                    }
+                }
+
+                if (activity.length > 0) {
+                    messagesContainer.appendChild(createToolHistoryDropdown(activity));
+                }
+
+                // Final assistant message after the tool rounds
+                if (i < msgs.length && msgs[i].role === 'assistant' && (!msgs[i].tool_calls || !msgs[i].tool_calls.length)) {
+                    if (msgs[i].content && msgs[i].content.trim()) {
+                        addMessage('assistant', msgs[i].content, false, true);
+                    }
+                    i++;
+                }
+                continue;
+            }
+
+            i++; // skip orphan tool messages
+        }
+
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    async function deleteConversation(event, conversationId) {
+        event.stopPropagation();
+
+        if (!confirm('Are you sure you want to delete this conversation?')) {
+            return;
+        }
+
+        try {
+            // TODO:
+            // Send a DELETE request to API_URL + "/conversations/" + conversationId.
+            // If the response is not ok, throw an error.
+
+            if (conversationId === currentConversationId) {
+                currentConversationId = null;
+                conversationHistory = [];
+                renderMessages();
+            }
+
+            await loadConversations();
+        } catch (error) {
+            console.error('Error deleting conversation:', error);
+        }
+    }
+
+    newChatBtn.addEventListener('click', () => {
+        currentConversationId = null;
+        conversationHistory = [];
+        renderMessages();
+        updateActiveConversation();
+    });
+
+    function addMessage(role, content, isTyping = false, isMarkdown = false) {
+        const emptyState = messagesContainer.querySelector('.empty-state');
+        if (emptyState) {
+            emptyState.remove();
+        }
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${role}`;
+
+        if (isTyping) {
+            messageDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+        } else {
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+
+            if (isMarkdown && role === 'assistant') {
+                bubbleDiv.innerHTML = marked.parse(content);
+            } else {
+                bubbleDiv.textContent = content;
+            }
+
+            messageDiv.appendChild(bubbleDiv);
+        }
+
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        return messageDiv;
+    }
+
+    async function streamResponse(userMessage) {
+        isStreaming = true;
+        sendButton.disabled = true;
+
+        const usermsg = {
+            role: 'user',
+            content: userMessage
+        };
+        addMessage('user', userMessage);
+
+        const typingIndicator = addMessage('assistant', '', true);
+
+        try {
+            // TODO (1 — create conversation if needed):
+            // If currentConversationId is null, send a POST request to API_URL + "/conversations"
+            // with Content-Type JSON and a body containing a "title" field — use the first 50 characters
+            // of the user message, appending "..." if it exceeds 50 characters.
+            // If the response is not ok, throw an error.
+            // Parse the JSON response and set currentConversationId from the returned conversation's id.
+            // Call loadConversations() to refresh the sidebar.
+
+            // TODO (2 — send the chat message):
+            // Send a POST request to API_URL + "/conversations/" + currentConversationId + "/chat"
+            // with Content-Type JSON and a body containing:
+            //   - message: the usermsg object (role + content)
+            //   - stream: true
+            // If the response is not ok, throw an error.
+
+            // TODO (3 — read the SSE stream):
+            // Obtain a ReadableStream reader from response.body and a TextDecoder.
+            // Declare tracking variables: assistantMessage, messageBubble, currentChunkContent (string),
+            // hasReceivedContent (bool), lastContentTime (Date.now()), pendingToolActivity (array),
+            // liveToolEl (element or null), receivedConversationId (bool).
+            //
+            // Set up a repeating interval (typingCheckInterval) every 100ms: if more than 750ms have
+            // passed since last content, content exists, and a typing indicator is not yet shown —
+            // flush currentChunkContent into conversationHistory, reset the message bubble state,
+            // and show a new typing indicator.
+            //
+            // Loop reading chunks until the reader signals done.
+            // For each chunk: decode bytes to text, split by newline, and for each line starting
+            // with "data: " extract the payload after the prefix. Then:
+            //
+            //   - If payload is "[DONE]": skip.
+            //   - Parse the payload as JSON, then handle by type:
+            //
+            //   - parsed.conversation_id (first event only): acknowledge and continue.
+            //
+            //   - parsed.error: throw an error with the error message.
+            //
+            //   - parsed.tool_activity: push the activity into pendingToolActivity.
+            //     On the first tool event, create a live indicator bubble (CSS class
+            //     "tool-calling-bubble") and append it to messagesContainer.
+            //     Update its label text: if type is "call" show "Calling <name>...",
+            //     if type is "result" show "<name> responded". Scroll to bottom.
+            //
+            //   - parsed.choices with delta.content present:
+            //     Remove currentTypingIndicator and liveToolEl if they exist.
+            //     On the first content chunk, remove the initial typingIndicator and create
+            //     a new assistant message bubble via addMessage.
+            //     Append the content to currentChunkContent, mark hasReceivedContent true,
+            //     update lastContentTime, re-render the bubble with marked.parse, scroll to bottom.
+            //
+            //   - parsed.choices with an empty delta (no content): update lastContentTime;
+            //     if no assistant bubble exists yet, create one.
+            //
+            // After the read loop ends:
+            //   - Clear typingCheckInterval.
+            //   - Remove currentTypingIndicator and liveToolEl if still present.
+            //   - If pendingToolActivity has entries, build a tool history dropdown via
+            //     createToolHistoryDropdown and insert it before the assistant message
+            //     (or append if there is none). Scroll to bottom.
+            //   - If currentChunkContent has content, push it to conversationHistory as an
+            //     assistant message object.
+            //   - If no content was ever received, remove the empty assistant message element.
+            //   - Call loadConversations() to refresh the sidebar.
+
+        } catch (error) {
+            console.error('Error:', error);
+            typingIndicator.remove();
+            addMessage('assistant', `Error: ${error.message}`);
+        } finally {
+            isStreaming = false;
+            sendButton.disabled = false;
+            messageInput.focus();
+        }
+    }
+
+    async function sendMessage() {
+        const message = messageInput.value.trim();
+
+        if (!message || isStreaming) return;
+
+        messageInput.value = '';
+        await streamResponse(message);
+    }
+
+    sendButton.addEventListener('click', sendMessage);
+
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !isStreaming) {
+            sendMessage();
+        }
+    });
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function createToolHistoryDropdown(activity) {
+        const callCount = activity.filter(a => a.type === 'call').length;
+        const id = `th-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+        const itemsHtml = activity.map(item => {
+            if (item.type === 'call') {
+                const argsStr = JSON.stringify(item.arguments, null, 2);
+                return `
+                    <div class="tool-activity-item tool-call-item">
+                        <div class="tool-activity-header">
+                            <span>&#9889;</span>
+                            <span>Called: <strong>${escapeHtml(item.name)}</strong></span>
+                        </div>
+                        <div class="tool-activity-body"><pre>${escapeHtml(argsStr)}</pre></div>
+                    </div>`;
+            } else {
+                return `
+                    <div class="tool-activity-item tool-result-item">
+                        <div class="tool-activity-header">
+                            <span>&#10003;</span>
+                            <span>Result${item.name ? ': <strong>' + escapeHtml(item.name) + '</strong>' : ''}</span>
+                        </div>
+                        <div class="tool-activity-body"><pre>${escapeHtml(item.content || '')}</pre></div>
+                    </div>`;
+            }
+        }).join('');
+
+        const container = document.createElement('div');
+        container.className = 'tool-history-container';
+        container.innerHTML = `
+            <div class="tool-history-wrapper">
+                <div class="tool-history-toggle" onclick="toggleToolHistory('${id}')">
+                    <span>&#128295;</span>
+                    <span class="tool-history-label">Tool calls (${callCount})</span>
+                    <span class="tool-history-chevron" id="${id}-chevron">&#9654;</span>
+                </div>
+                <div class="tool-history-panel" id="${id}">
+                    ${itemsHtml}
+                </div>
+            </div>`;
+        return container;
+    }
+
+    function toggleToolHistory(id) {
+        const panel = document.getElementById(id);
+        const chevron = document.getElementById(`${id}-chevron`);
+        if (!panel) return;
+        const open = panel.classList.toggle('open');
+        chevron.innerHTML = open ? '&#9660;' : '&#9654;';
+    }
+
+    window.addEventListener('load', () => {
+        messageInput.focus();
+        loadConversations();
+    });
+</script>
+</body>
+</html>
