@@ -51,7 +51,7 @@ Service.
 2. You need to think of the way how to change current flow to support tools from different MCP servers and implement it
 3. In the end you should have the Agent that is able to fetch the info from the WEB about some people and save it to
    Users Service
-4. Hint: the problem place is [openai_client](agent/openai_client.py)
+4. Hint: the problem place is [openai_client](agent/agent.py)
 
 ---
 
