@@ -53,7 +53,7 @@ Service.
 2. You need to think of the way how to change current flow to support tools from different MCP servers and implement it
 3. In the end you should have the Agent that is able to fetch the info from the WEB about some people and save it to
    Users Service
-4. Hint: the problem place is [openai_client](agent/agent.py)
+4. Hint: the problem place is [agent](agent/agent.py)
 
 ---
 
@@ -61,7 +61,7 @@ Service.
 
 ### 1. Create and run Agent with STDIO MCP Client:
 
-1. Open [STDIO mcp_client](agent/mcp_clients/http.py) and implement all ***TODO***
+1. Open [STDIO mcp_client](agent/mcp_clients/stdio.py) and implement all ***TODO***
 2. Open [app](agent/app.py) and instead of HttpMCPClient client use this one:
     ```python
         async with StdioMCPClient(
