@@ -5,7 +5,9 @@ from t1_llm_api.base_client import AIClient
 
 
 async def start(stream: bool, client: AIClient) -> None:
+
     """
+    async def - “This function can run asynchronously—it can pause and let other things run while waiting.”
     Start an interactive chat session with an AI client.
 
     This function runs a continuous loop that:
