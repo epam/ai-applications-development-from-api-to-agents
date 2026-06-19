@@ -12,7 +12,7 @@ redis[hiredis]==7.1.1
 fastapi==0.135.1
 
 langchain-community==0.4.1
-langchain-openai==1.1.10
+langchain-openai==1.1.14
 langchain-chroma==1.1.0
 faiss-cpu==1.13.2
 psycopg2-binary>=2.9.11
