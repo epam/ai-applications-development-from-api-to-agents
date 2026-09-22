@@ -1,23 +1,23 @@
-requests==2.32.5
-aiohttp==3.13.3
+requests==2.34.2
+aiohttp==3.14.3
 httpx==0.28.1
 
-openai==2.24.0
-anthropic>=0.84.0
-google-genai==1.65.0
-protobuf==7.34.0
+openai==3.17.0
+anthropic==1.7.0
+google-genai==2.24.0
+protobuf==7.36.2
 
-fastmcp==3.0.2
-redis[hiredis]==7.1.1
-fastapi==0.135.1
+fastmcp==3.4.7
+redis[hiredis]==8.1.0
+fastapi==0.141.1
 
-langchain-community==0.4.1
-langchain-openai==1.1.10
+langchain-community==0.4.2
+langchain-openai==1.6.3
 langchain-chroma==1.1.0
-faiss-cpu==1.13.2
-psycopg2-binary>=2.9.11
-presidio-analyzer==2.2.360
-presidio_anonymizer==2.2.360
-pydantic==2.12.5
+faiss-cpu==1.15.1
+psycopg2-binary>=2.9.13
+presidio-analyzer==2.2.364
+presidio_anonymizer==2.2.364
+pydantic==2.13.5
 pyyaml>=6.0
 python-jose==3.5.0
