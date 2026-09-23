@@ -1,7 +1,7 @@
 from typing import Optional
 
-from mcp import ClientSession
-from mcp.client.stdio import StdioServerParameters, stdio_client
+from mcp import Client
+from mcp.client.stdio import StdioServerParameters
 
 from t9_mcp_fundamentals.agent.mcp_clients.base import MCPClient
 
@@ -53,9 +53,6 @@ class StdioMCPClient(MCPClient):
         self.args = args or []
         self.env = env
 
-        self._stdio_context = None
-        self._session_context = None
-
     def _build_server_params(self) -> StdioServerParameters:
         #TODO:
         # 1. If `self.docker_image` is set, return `StdioServerParameters` with:
@@ -80,17 +77,16 @@ class StdioMCPClient(MCPClient):
         #TODO:
         # 1. Call `_build_server_params()` and assign to `server_params`
         # 2. Print `_startup_message()`
-        # 3. Call `stdio_client(server_params)` and assign to `self._stdio_context`
-        # 4. Call `await self._stdio_context.__aenter__()` and assign to `read_stream, write_stream`
-        # 5. Create `ClientSession(read_stream, write_stream)` and assign to `self._session_context`
-        # 6. Call `await self._session_context.__aenter__()` and assign to `self.session`
-        # 7. Print "Initializing MCP session...", call `await self.session.initialize()`, assign to `init_result`,
-        #    and print `f"Capabilities: {init_result.model_dump_json(indent=2)}"`
-        # 8. Return self
+        # 3. Create `Client(server_params)` and assign to `self.client` (Client spawns the process)
+        # 4. Call `await self.client.__aenter__()`. Client sends `server/discover` first. Servers that don't support
+        #    stateless MCP (2026-07-28) answer with an error and Client falls back to the legacy `initialize` handshake
+        # 5. Print f"Connected to {self.client.server_info} (protocol version {self.client.protocol_version})" and
+        #    f"Capabilities: {self.client.server_capabilities.model_dump_json(indent=2, exclude_none=True)}"
+        # 6. Return self
         raise NotImplementedError()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         #TODO:
-        # 1. If `self._session_context` is present, call `await self._session_context.__aexit__(exc_type, exc_val, exc_tb)`
-        # 2. If `self._stdio_context` is present, call `await self._stdio_context.__aexit__(exc_type, exc_val, exc_tb)`
+        # This is the shutdown method.
+        # If `self.client` is present, call `await self.client.__aexit__(exc_type, exc_val, exc_tb)` and set `self.client = None`
         raise NotImplementedError()

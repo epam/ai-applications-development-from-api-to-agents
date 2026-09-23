@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import Optional, Any
 
-from mcp import ClientSession
+from mcp import Client
 from mcp.types import CallToolResult, TextContent, GetPromptResult, ReadResourceResult, Resource, TextResourceContents, BlobResourceContents, Prompt
 from pydantic import AnyUrl
 
@@ -9,7 +9,7 @@ from pydantic import AnyUrl
 class MCPClient(ABC):
 
     def __init__(self) -> None:
-        self.session: Optional[ClientSession] = None
+        self.client: Optional[Client] = None
 
     @abstractmethod
     async def __aenter__(self):
@@ -21,10 +21,10 @@ class MCPClient(ABC):
 
     async def get_tools(self) -> list[dict[str, Any]]:
         """Get available tools from MCP server"""
-        if not self.session:
+        if not self.client:
             raise RuntimeError("MCP client not connected. Call connect() first.")
         #TODO:
-        # 1. Call `await self.session.list_tools()` and assign to `tools`
+        # 1. Call `await self.client.list_tools()` and assign to `tools`
         # 2. Return list with dicts:
         #        [
         #             {
@@ -32,7 +32,7 @@ class MCPClient(ABC):
         #                 "function": {
         #                     "name": tool.name,
         #                     "description": tool.description,
-        #                     "parameters": tool.inputSchema
+        #                     "parameters": tool.input_schema
         #                 }
         #             }
         #             for tool in tools.tools
@@ -41,11 +41,11 @@ class MCPClient(ABC):
 
     async def call_tool(self, tool_name: str, tool_args: dict[str, Any]) -> Any:
         """Call a specific tool on the MCP server"""
-        if not self.session:
+        if not self.client:
             raise RuntimeError("MCP client not connected. Call connect() first.")
 
         #TODO:
-        # 1. Call `await self.session.call_tool(tool_name, tool_args)` and assign to `tool_result: CallToolResult` variable
+        # 1. Call `await self.client.call_tool(tool_name, tool_args)` and assign to `tool_result: CallToolResult` variable
         # 2. Get `content` with index `0` from `tool_result` and assign to `content` variable
         # 3. print(f"    ⚙️: {content}\n")
         # 4. If `isinstance(content, TextContent)` -> return content.text
@@ -54,7 +54,7 @@ class MCPClient(ABC):
 
     async def get_resources(self) -> list[Resource]:
         """Get available resources from MCP server"""
-        if not self.session:
+        if not self.client:
             raise RuntimeError("MCP client not connected.")
         #TODO:
         # Wrap into try/except (not all MCP servers have resources), get `list_resources` (it is async) and resources
@@ -63,7 +63,7 @@ class MCPClient(ABC):
 
     async def get_resource(self, uri: AnyUrl) -> str:
         """Get specific resource content"""
-        if not self.session:
+        if not self.client:
             raise RuntimeError("MCP client not connected.")
 
         #TODO:
@@ -78,7 +78,7 @@ class MCPClient(ABC):
 
     async def get_prompts(self) -> list[Prompt]:
         """Get available prompts from MCP server"""
-        if not self.session:
+        if not self.client:
             raise RuntimeError("MCP client not connected.")
         #TODO:
         # Wrap into try/except (not all MCP servers have prompts), get `list_prompts` (it is async) and prompts
@@ -87,7 +87,7 @@ class MCPClient(ABC):
 
     async def get_prompt(self, name: str) -> str:
         """Get specific prompt content"""
-        if not self.session:
+        if not self.client:
             raise RuntimeError("MCP client not connected.")
         #TODO:
         # 1. Get prompt by name

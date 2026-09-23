@@ -222,11 +222,13 @@ The client should:
 
 - Run the PKCE browser flow on startup (opens Keycloak login once)
 - Attach the `Authorization: Bearer <token>` header to MCP requests
-- Detect token expiry **before** each tool call and transparently refresh + reconnect
+- Detect token expiry **before** each tool call and transparently refresh it
 
-> **Why proactive refresh?**
-> If the token expires mid-stream, the MCP `streamable_http_client` connection breaks at the async transport layer —
-> making after-the-fact recovery impossible. Checking expiry before each call avoids this entirely.
+> **Why proactive refresh and no reconnect?**
+> MCP is stateless (protocol version [2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)): there is no
+> session, every MCP request is a separate HTTP POST that carries the `Authorization` header. So the refreshed token only
+> has to be put into the headers of the http client, the next request uses it and there is nothing to reconnect.
+> Checking expiry before each call avoids a request that fails with `401`.
 
 ### 4. Run the Agent with OAuth
 
