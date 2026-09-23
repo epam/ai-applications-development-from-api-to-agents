@@ -16,7 +16,7 @@ class BaseAgent(ABC):
         """Initialise the agent.
 
         Args:
-            model: Provider-specific model identifier (e.g. 'gpt-5.2', 'claude-sonnet-4.5').
+            model: Provider-specific model identifier (e.g. 'gpt-5.6-terra', 'claude-sonnet-5').
             api_key: Secret key used to authenticate with the LLM provider.
             tools: Optional list of tools the agent may call. Each tool is
                 indexed by its ``name`` for fast lookup during execution.

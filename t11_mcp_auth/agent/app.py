@@ -1,7 +1,7 @@
 import asyncio
 import json
 
-from commons.constants import OPENAI_API_KEY, DEFAULT_SYSTEM_PROMPT
+from commons.constants import OPENAI_API_KEY, DEFAULT_SYSTEM_PROMPT, OPENAI_TERRA_MODEL
 from commons.models.message import Message
 from commons.models.role import Role
 from t11_mcp_auth.agent._agent import AgentMCPAuth
@@ -22,7 +22,7 @@ async def main():
 
         dial_client = AgentMCPAuth(
             api_key=OPENAI_API_KEY,
-            model="gpt-5.2",
+            model=OPENAI_TERRA_MODEL,
             tools=tools,
             mcp_client=mcp_client
         )

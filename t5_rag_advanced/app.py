@@ -1,4 +1,4 @@
-from commons.constants import OPENAI_API_KEY, OPENAI_EMBEDDINGS_ENDPOINT, OPENAI_CHAT_COMPLETIONS_ENDPOINT
+from commons.constants import OPENAI_API_KEY, OPENAI_EMBEDDINGS_ENDPOINT, OPENAI_CHAT_COMPLETIONS_ENDPOINT, OPENAI_EMBEDDINGS_MODEL, OPENAI_TERRA_MODEL
 from commons.models.conversation import Conversation
 from commons.models.message import Message
 from commons.models.role import Role
@@ -29,7 +29,7 @@ USER_PROMPT = """##RAG CONTEXT:
 
 embeddings_client = EmbeddingsClient(
     endpoint=OPENAI_EMBEDDINGS_ENDPOINT,
-    model_name='text-embedding-3-small',
+    model_name=OPENAI_EMBEDDINGS_MODEL,
     api_key=OPENAI_API_KEY
 )
 # embeddings_client = EmbeddingsClient(
@@ -39,7 +39,7 @@ embeddings_client = EmbeddingsClient(
 # )
 completion_client = ChatCompletionClient(
     endpoint=OPENAI_CHAT_COMPLETIONS_ENDPOINT,
-    model_name='gpt-5.2',
+    model_name=OPENAI_TERRA_MODEL,
     api_key=OPENAI_API_KEY
 )
 

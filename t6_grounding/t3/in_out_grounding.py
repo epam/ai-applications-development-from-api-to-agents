@@ -7,7 +7,7 @@ from langchain_openai import OpenAIEmbeddings
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_EMBEDDINGS_MODEL, OPENAI_LUNA_MODEL
 from t6_grounding.user_service_client import UserServiceClient
 
 """
@@ -140,8 +140,9 @@ class InputGrounder:
         ]
 
         response = llm_client.beta.chat.completions.parse(
-            model='gpt-4.1-nano',
+            model=OPENAI_LUNA_MODEL,
             temperature=0.0,
+            reasoning_effort="none",  # GPT-5.6 accepts a non-default temperature only without reasoning
             messages=messages,
             response_format=GroupingResults,
         )
@@ -177,7 +178,7 @@ class OutputGrounder:
 
 async def main():
     embeddings = OpenAIEmbeddings(
-        model='text-embedding-3-small',
+        model=OPENAI_EMBEDDINGS_MODEL,
         api_key=OPENAI_API_KEY,
         dimensions=384,
     )

@@ -1,7 +1,7 @@
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_LUNA_MODEL
 
 SYSTEM_PROMPT = "You are a secure colleague directory assistant designed to help users find contact information for business purposes."
 
@@ -121,8 +121,9 @@ class Validation(BaseModel):
 
 def validate(ai_response: str) -> Validation:
     response = client.beta.chat.completions.parse(
-        model='gpt-4.1-nano',
+        model=OPENAI_LUNA_MODEL,
         temperature=0.0,
+        reasoning_effort="none",  # GPT-5.6 accepts a non-default temperature only without reasoning
         messages=[
             {"role": "system", "content": VALIDATION_PROMPT},
             {"role": "user", "content": ai_response}
@@ -148,8 +149,9 @@ def main(soft_response: bool):
 
         messages.append({"role": "user", "content": user_input})
         response = client.chat.completions.create(
-            model='gpt-4.1-nano',
+            model=OPENAI_LUNA_MODEL,
             temperature=0.0,
+            reasoning_effort="none",
             messages=messages
         )
         ai_content = response.choices[0].message.content
@@ -160,8 +162,9 @@ def main(soft_response: bool):
             print(f"🤖Response:\n{ai_content}")
         elif soft_response:
             filter_response = client.chat.completions.create(
-                model='gpt-4.1-nano',
+                model=OPENAI_LUNA_MODEL,
                 temperature=0.0,
+                reasoning_effort="none",
                 messages=[
                     {"role": "system", "content": FILTER_SYSTEM_PROMPT},
                     {"role": "user", "content": ai_content}

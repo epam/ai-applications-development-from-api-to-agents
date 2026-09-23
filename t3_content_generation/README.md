@@ -9,7 +9,7 @@ and audio. The goal is to understand how to work with vision models, image gener
 
 ### 1. Image Analysis (Vision)
 Open [t1/image_analysis.py](t1/image_analysis.py) and implement the TODO:
-- Analyse two images using `gpt-4o` via `/v1/chat/completions`:
+- Analyse two images using `gpt-5.6-terra` via `/v1/chat/completions`:
   - A remote image by URL: `https://a-z-animals.com/media/2019/11/Elephant-male-1024x535.jpg`
   - A local image `logo.png` — encode it to base64 (see [docs](https://developers.openai.com/api/docs/guides/images-vision?format=base64-encoded))
 - Pass both images in a single message and ask the model to generate a poem based on them

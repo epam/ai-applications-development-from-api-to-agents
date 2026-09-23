@@ -27,7 +27,8 @@ class T12Agent:
         request = {
             "model": self._model,
             "messages": [msg.to_dict() for msg in messages],
-            "tools": self._tools_schemas
+            "tools": self._tools_schemas,
+            "reasoning_effort": "none"  # GPT-5.6 supports function tools in Chat Completions only without reasoning
         }
 
         response = self._client.chat.completions.create(**request)

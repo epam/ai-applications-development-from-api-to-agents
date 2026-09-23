@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_LUNA_MODEL
 
 SYSTEM_PROMPT = """You are a secure colleague directory assistant designed to help users find contact information for business purposes.
 
@@ -65,8 +65,9 @@ def main():
         messages.append({"role": "user", "content": user_input})
 
         response = client.chat.completions.create(
-            model='gpt-4.1-nano',
+            model=OPENAI_LUNA_MODEL,
             temperature=0.0,
+            reasoning_effort="none",  # GPT-5.6 accepts a non-default temperature only without reasoning
             messages=messages
         )
         ai_content = response.choices[0].message.content

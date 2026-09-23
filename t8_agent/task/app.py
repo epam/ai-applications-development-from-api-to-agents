@@ -1,4 +1,4 @@
-from commons.constants import OPENAI_API_KEY, ANTHROPIC_API_KEY
+from commons.constants import OPENAI_API_KEY, ANTHROPIC_API_KEY, ANTHROPIC_SONNET_MODEL, OPENAI_TERRA_MODEL
 from commons.models.conversation import Conversation
 from commons.models.message import Message
 from commons.models.role import Role
@@ -27,13 +27,13 @@ def main():
     ]
 
     # agent = OpenAIBasedAgent(
-    #     model="gpt-5.2",
+    #     model=OPENAI_TERRA_MODEL,
     #     api_key=OPENAI_API_KEY,
     #     tools=tools,
     #     system_prompt=SYSTEM_PROMPT,
     # )
     agent = AnthropicBasedAgent(
-        model="claude-sonnet-4-5",
+        model=ANTHROPIC_SONNET_MODEL,
         api_key=ANTHROPIC_API_KEY,
         tools=tools,
         system_prompt=SYSTEM_PROMPT,

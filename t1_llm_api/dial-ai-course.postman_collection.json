@@ -13,7 +13,7 @@
           "name": "openai",
           "item": [
             {
-              "name": "GPT-5.2 chat/completions",
+              "name": "GPT-5.6 Terra chat/completions",
               "request": {
                 "method": "POST",
                 "header": [
@@ -25,7 +25,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"hi\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"Ahoy there, matey! What be yer business on these seas today?\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"what can you do?\"\n        }\n    ],\n    \"model\": \"gpt-5.2\",\n    \"stream\": false\n}",
+                  "raw": "{\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"hi\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"Ahoy there, matey! What be yer business on these seas today?\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"what can you do?\"\n        }\n    ],\n    \"model\": \"gpt-5.6-terra\",\n    \"stream\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -50,7 +50,7 @@
               "response": []
             },
             {
-              "name": "GPT-5.2 responses",
+              "name": "GPT-5.6 Terra responses",
               "request": {
                 "auth": {
                   "type": "noauth"
@@ -65,7 +65,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"instructions\": \"Behave as a pirate!\",\n    \"input\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"hi\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"Ahoy there, matey! What be yer business on these seas today?\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"what can you do?\"\n        }\n    ],\n    \"model\": \"gpt-5.2\",\n    \"stream\": false\n}",
+                  "raw": "{\n    \"instructions\": \"Behave as a pirate!\",\n    \"input\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"hi\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"Ahoy there, matey! What be yer business on these seas today?\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"what can you do?\"\n        }\n    ],\n    \"model\": \"gpt-5.6-terra\",\n    \"stream\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -94,7 +94,7 @@
           "name": "anthropic",
           "item": [
             {
-              "name": "sonnet-4.5",
+              "name": "sonnet-5",
               "request": {
                 "auth": {
                   "type": "noauth"
@@ -114,7 +114,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"system\": \"Behave as a pirate!\",\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"hi\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"Ahoy there, matey! What be yer business on these seas today?\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"what can you do?\"\n        }\n    ],\n    \"model\": \"claude-sonnet-4-5\",\n    \"max_tokens\": 1024,\n    \"stream\": false\n}",
+                  "raw": "{\n    \"system\": \"Behave as a pirate!\",\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"hi\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"Ahoy there, matey! What be yer business on these seas today?\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"what can you do?\"\n        }\n    ],\n    \"model\": \"claude-sonnet-5\",\n    \"max_tokens\": 1024,\n    \"stream\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"

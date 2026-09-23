@@ -2,7 +2,7 @@ import json
 import anthropic
 from pathlib import Path
 
-from commons.constants import ANTHROPIC_API_KEY
+from commons.constants import ANTHROPIC_API_KEY, ANTHROPIC_SONNET_MODEL
 
 
 SKILLS_VERSION = "skills-2025-10-02"
@@ -66,7 +66,7 @@ def chat(client: anthropic.Anthropic, skill_id: str, log_request: bool=True, log
             container["id"] = container_id
 
         request_payload = {
-            "model": "claude-sonnet-4-6",
+            "model": ANTHROPIC_SONNET_MODEL,
             "max_tokens": 4096,
             "messages": messages,
             "container": container,

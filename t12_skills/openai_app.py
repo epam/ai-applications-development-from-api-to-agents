@@ -6,7 +6,7 @@ from pathlib import Path
 from openai import OpenAI
 from openai.types.responses import ResponseFunctionShellToolCall
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_TERRA_MODEL
 
 
 def zip_skill(skill_dir: Path) -> bytes:
@@ -56,7 +56,7 @@ def chat(client: OpenAI, skill_id: str, log_request: bool = True, log_response: 
         }
 
         request_payload = {
-            "model": "gpt-5.2",
+            "model": OPENAI_TERRA_MODEL,
             "input": [
                 {
                     "role": "user",

@@ -3,7 +3,7 @@ from typing import Any
 
 from openai import AsyncOpenAI
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_LUNA_MODEL
 from t6_grounding.user_service_client import UserServiceClient
 
 BATCH_SYSTEM_PROMPT = """You are a user search assistant. Your task is to find users from the provided list that match the search criteria.
@@ -75,8 +75,9 @@ async def generate_response(system_prompt: str, user_message: str) -> str:
         {"role": "user", "content": user_message},
     ]
     response = await llm_client.chat.completions.create(
-        model='gpt-4.1-nano',
+        model=OPENAI_LUNA_MODEL,
         temperature=0.0,
+        reasoning_effort="none",  # GPT-5.6 accepts a non-default temperature only without reasoning
         messages=messages,
     )
     total_tokens = response.usage.total_tokens if response.usage else 0

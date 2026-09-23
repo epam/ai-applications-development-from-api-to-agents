@@ -2,7 +2,7 @@ from typing import Any
 
 import requests
 
-from commons.constants import OPENAI_RESPONSES_ENDPOINT
+from commons.constants import OPENAI_RESPONSES_ENDPOINT, OPENAI_TERRA_MODEL
 from t8_agent.task.tools.base import BaseTool
 
 
@@ -39,7 +39,7 @@ class WebSearchTool(BaseTool):
             "Content-Type": "application/json",
         }
         request_data = {
-            "model": "gpt-5.2",
+            "model": OPENAI_TERRA_MODEL,
             "tools": [{"type": "web_search"}],
             "input": str(arguments["request"]),
         }

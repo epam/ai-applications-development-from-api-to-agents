@@ -24,7 +24,7 @@ class AnthropicAIClient(AIClient):
 
         Args:
             endpoint (str): The Anthropic API endpoint (for compatibility, not used by SDK).
-            model_name (str): The Claude model to use (e.g., 'claude-3-opus', 'claude-sonnet-4-5').
+            model_name (str): The Claude model to use (e.g., 'claude-sonnet-5', 'claude-haiku-4-5').
             api_key (str): The Anthropic API key for authentication.
             system_prompt (str): The system instruction to guide Claude's behavior.
         """

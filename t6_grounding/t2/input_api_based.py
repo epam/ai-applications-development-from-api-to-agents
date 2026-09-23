@@ -4,7 +4,7 @@ from typing import Any
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_LUNA_MODEL
 from t6_grounding.user_service_client import UserServiceClient
 
 QUERY_ANALYSIS_PROMPT = """You are a query analysis system that extracts search parameters from user questions about users.
@@ -82,8 +82,9 @@ def retrieve_context(user_question: str) -> list[dict[str, Any]]:
     ]
 
     response = llm_client.beta.chat.completions.parse(
-        model='gpt-4.1-nano',
+        model=OPENAI_LUNA_MODEL,
         temperature=0.0,
+        reasoning_effort="none",  # GPT-5.6 accepts a non-default temperature only without reasoning
         messages=messages,
         response_format=SearchRequests,
     )
@@ -123,8 +124,9 @@ def generate_answer(augmented_prompt: str) -> str:
     ]
 
     response = llm_client.chat.completions.create(
-        model='gpt-4o-mini',
+        model=OPENAI_LUNA_MODEL,
         temperature=0.0,
+        reasoning_effort="none",
         messages=messages,
     )
     return response.choices[0].message.content or ""

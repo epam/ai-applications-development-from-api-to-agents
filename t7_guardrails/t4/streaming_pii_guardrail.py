@@ -4,7 +4,7 @@ from presidio_analyzer import AnalyzerEngine
 from presidio_analyzer.nlp_engine import NlpEngineProvider
 from presidio_anonymizer import AnonymizerEngine
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_LUNA_MODEL
 
 
 class PresidioStreamingPIIGuardrail:
@@ -223,8 +223,9 @@ def main():
         full_response = ""
 
         for chunk in client.chat.completions.create(
-            model='gpt-4.1-nano',
+            model=OPENAI_LUNA_MODEL,
             temperature=0.0,
+            reasoning_effort="none",  # GPT-5.6 accepts a non-default temperature only without reasoning
             messages=messages,
             stream=True
         ):

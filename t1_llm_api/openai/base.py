@@ -20,7 +20,7 @@ class BaseOpenAIClient(AIClient, ABC):
 
         Args:
             endpoint (str): The OpenAI API endpoint URL.
-            model_name (str): The OpenAI model identifier (e.g., 'gpt-5').
+            model_name (str): The OpenAI model identifier (e.g., 'gpt-5.6-terra').
             system_prompt (str): The system-level instruction for the model.
             api_key (str): The raw OpenAI API key (will be prefixed with 'Bearer ').
 

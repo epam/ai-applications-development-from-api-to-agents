@@ -42,6 +42,7 @@ class OpenAIBasedAgent(BaseAgent):
             "model": self._model,
             "messages": [msg.to_dict() for msg in request_messages],
             "tools": self._tools_schemas,
+            "reasoning_effort": "none",  # GPT-5.6 supports function tools in Chat Completions only without reasoning
         }
 
         if print_request:
@@ -64,7 +65,7 @@ class OpenAIBasedAgent(BaseAgent):
                 tool_calls = message_data.get("tool_calls")
 
                 ai_response = Message(
-                    role=Role.AI,
+                    role=Role.ASSISTANT,
                     content=content,
                     tool_calls=tool_calls
                 )

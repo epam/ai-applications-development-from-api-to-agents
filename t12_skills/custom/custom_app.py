@@ -4,7 +4,7 @@ from pathlib import Path
 
 from openai import OpenAI
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_TERRA_MODEL
 from commons.models.message import Message
 from commons.models.role import Role
 from t12_skills.custom.agent import T12Agent
@@ -83,7 +83,7 @@ async def main():
 
     agent = T12Agent(
         client=OpenAI(api_key=OPENAI_API_KEY),
-        model="gpt-5.2",
+        model=OPENAI_TERRA_MODEL,
         tools=tools
     )
 
