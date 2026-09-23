@@ -31,14 +31,7 @@ By completing this task, you will learn:
    - in [tools](mcp_server/tools) you will find simple tools, you need to implement parts described in `TODO` sections
    - lastly, in [server.py](mcp_server/server.py) provide implementations described in `TODO` sections
 3. Run MCP server locally
-4. Test it with Postman. Import [mcp_custom.postman_collection.json](mcp_custom.postman_collection.json) into postman. (`server/discover` -> `tools/list` -> `tools/call`). There is no session, so you can send the requests in any order
-
-<details> 
-<summary><b>Test in Postman</b></summary>
-
-![postman.gif](postman-test.gif)
-
-</details>
+4. Test it with Postman
 
 ## 2. Create Agent
 1. Provide implementation for the [app.py](agent/app.py) and run it locally with MCPClient
@@ -137,34 +130,6 @@ Each request is a separate HTTP POST. The server keeps no state between requests
 | 200         | `result.isError: true`    | Tool execution error (the LLM can read it and retry)                                     |
 
 ---
-
-## Implementation Tips
-
-### Custom MCP Client Implementation
-
-1. **No Session**: Add `_meta` with protocol version, client info and client capabilities to `params` of every request
-2. **Headers**: Mirror protocol version, method and tool name into `MCP-Protocol-Version`, `Mcp-Method` and `Mcp-Name`
-3. **Response Types**: The server decides per request whether to answer with `application/json` or `text/event-stream`. Support both
-4. **SSE Parsing**: Look for `data:` prefixed lines, skip `event:` lines and comments. The message with `id` is the response (notifications may come before it)
-5. **JSON-RPC Errors**: Check for `error` field in responses
-6. **Content Extraction**: Tool results are in `result.content[0].text`
-
-### Common Issues
-
-- **Missing Accept Header**: Server requires both JSON and SSE accept types
-- **Missing or Mismatched Headers**: `MCP-Protocol-Version`, `Mcp-Method` and `Mcp-Name` must match the body, otherwise `400` with `-32020`
-- **Missing `_meta`**: Every request needs protocol version and client capabilities, otherwise `400` with `-32602`
-- **Tool Arguments**: Arguments must be properly formatted as per tool schema
-- **Async Context**: Use proper async/await patterns for HTTP requests
-
-### Out of Scope
-
-The custom server and client implement the core of the protocol that is needed for tools. These 2026-07-28 features are not implemented:
-[Multi Round-Trip Requests](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr) (`resultType: "input_required"`),
-[subscriptions/listen](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions),
-[`x-mcp-header`](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http#custom-headers-from-tool-parameters),
-pagination, resources and prompts.
-
 
 ## Additional Resources
 
