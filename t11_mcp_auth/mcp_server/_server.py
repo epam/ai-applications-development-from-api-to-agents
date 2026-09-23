@@ -1,4 +1,4 @@
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from commons.user_service.client import UserServiceClient
 from commons.user_service.user_info import UserSearchRequest, UserCreate, UserUpdate

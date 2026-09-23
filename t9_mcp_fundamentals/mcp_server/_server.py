@@ -1,16 +1,11 @@
 from pathlib import Path
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from commons.user_service.client import UserServiceClient
 from commons.user_service.user_info import UserSearchRequest, UserCreate, UserUpdate
 
-mcp = FastMCP(
-    name="users-management-mcp-server",
-    host="0.0.0.0",
-    port=8005,
-    log_level="INFO"
-)
+mcp = FastMCP(name="users-management-mcp-server")
 
 user_client = UserServiceClient()
 

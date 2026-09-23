@@ -1,7 +1,7 @@
-from typing import Any
+from typing import Any, Optional
 
-import httpx
-from mcp import ClientSession
+import httpx2
+from mcp import Client
 from mcp.client.streamable_http import streamable_http_client
 from mcp.types import CallToolResult, TextContent
 
@@ -15,45 +15,41 @@ class ApiKeyMCPClient(T11MCPClient):
         super().__init__()
         self.mcp_server_url = mcp_server_url
         self.api_key = api_key
-        self._streams_context = None
-        self._session_context = None
+        self._http_client: Optional[httpx2.AsyncClient] = None
 
     async def __aenter__(self):
-        http_client = httpx.AsyncClient(headers={"X-API-Key": self.api_key})
-        self._streams_context = streamable_http_client(
-            self.mcp_server_url,
-            http_client=http_client,
-        )
+        # Stateless MCP: every request is a separate POST, so the API key header is sent with each of them
+        self._http_client = httpx2.AsyncClient(headers={"X-API-Key": self.api_key})
+        self.client = Client(streamable_http_client(self.mcp_server_url, http_client=self._http_client))
+        await self.client.__aenter__()
 
-        read_stream, write_stream, _ = await self._streams_context.__aenter__()
-
-        self._session_context = ClientSession(read_stream, write_stream)
-        self.session = await self._session_context.__aenter__()
-
-        init_result = await self.session.initialize()
-        print(init_result.model_dump_json(indent=2))
+        print(f"Connected to {self.client.server_info} (protocol version {self.client.protocol_version})")
+        print(self.client.server_capabilities.model_dump_json(indent=2, exclude_none=True))
 
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self.session and self._session_context:
-            await self._session_context.__aexit__(exc_type, exc_val, exc_tb)
-        if self._streams_context:
-            await self._streams_context.__aexit__(exc_type, exc_val, exc_tb)
+        if self.client:
+            await self.client.__aexit__(exc_type, exc_val, exc_tb)
+            self.client = None
+        # The transport doesn't close an http client that was passed to it
+        if self._http_client:
+            await self._http_client.aclose()
+            self._http_client = None
 
     async def get_tools(self) -> list[dict[str, Any]]:
         """Get available tools from MCP server"""
-        if not self.session:
+        if not self.client:
             raise RuntimeError("MCP client not connected. Call connect() first.")
 
-        tools = await self.session.list_tools()
+        tools = await self.client.list_tools()
         return [
             {
                 "type": "function",
                 "function": {
                     "name": tool.name,
                     "description": tool.description,
-                    "parameters": tool.inputSchema
+                    "parameters": tool.input_schema
                 }
             }
             for tool in tools.tools
@@ -61,12 +57,12 @@ class ApiKeyMCPClient(T11MCPClient):
 
     async def call_tool(self, tool_name: str, tool_args: dict[str, Any]) -> Any:
         """Call a specific tool on the MCP server"""
-        if not self.session:
+        if not self.client:
             raise RuntimeError("MCP client not connected. Call connect() first.")
 
         print(f"    🔧 Calling `{tool_name}` with {tool_args}")
 
-        tool_result: CallToolResult = await self.session.call_tool(tool_name, tool_args)
+        tool_result: CallToolResult = await self.client.call_tool(tool_name, tool_args)
 
         if not tool_result.content:
             return "No content returned from tool"

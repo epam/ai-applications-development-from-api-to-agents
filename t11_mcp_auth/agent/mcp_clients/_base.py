@@ -1,13 +1,13 @@
 from abc import abstractmethod, ABC
 from typing import Optional, Any
 
-from mcp import ClientSession
+from mcp import Client
 
 
 class T11MCPClient(ABC):
 
     def __init__(self) -> None:
-        self.session: Optional[ClientSession] = None
+        self.client: Optional[Client] = None
 
     @abstractmethod
     async def __aenter__(self):

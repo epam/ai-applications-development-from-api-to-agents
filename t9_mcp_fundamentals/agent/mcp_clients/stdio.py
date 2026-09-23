@@ -1,7 +1,7 @@
 from typing import Optional
 
-from mcp import ClientSession
-from mcp.client.stdio import StdioServerParameters, stdio_client
+from mcp import Client
+from mcp.client.stdio import StdioServerParameters
 
 from t9_mcp_fundamentals.agent.mcp_clients.base import MCPClient
 
@@ -53,9 +53,6 @@ class StdioMCPClient(MCPClient):
         self.args = args or []
         self.env = env
 
-        self._stdio_context = None
-        self._session_context = None
-
     def _build_server_params(self) -> StdioServerParameters:
         if self.docker_image:
             return StdioServerParameters(
@@ -81,20 +78,17 @@ class StdioMCPClient(MCPClient):
         server_params = self._build_server_params()
         print(self._startup_message())
 
-        self._stdio_context = stdio_client(server_params)
-        read_stream, write_stream = await self._stdio_context.__aenter__()
+        # Client spawns the process and sends `server/discover` first. Servers that don't support stateless MCP
+        # (2026-07-28) answer with an error and Client falls back to the legacy `initialize` handshake
+        self.client = Client(server_params)
+        await self.client.__aenter__()
 
-        self._session_context = ClientSession(read_stream, write_stream)
-        self.session = await self._session_context.__aenter__()
-
-        print("Initializing MCP session...")
-        init_result = await self.session.initialize()
-        print(f"Capabilities: {init_result.model_dump_json(indent=2)}")
+        print(f"Connected to {self.client.server_info} (protocol version {self.client.protocol_version})")
+        print(f"Capabilities: {self.client.server_capabilities.model_dump_json(indent=2, exclude_none=True)}")
 
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self._session_context:
-            await self._session_context.__aexit__(exc_type, exc_val, exc_tb)
-        if self._stdio_context:
-            await self._stdio_context.__aexit__(exc_type, exc_val, exc_tb)
+        if self.client:
+            await self.client.__aexit__(exc_type, exc_val, exc_tb)
+            self.client = None
