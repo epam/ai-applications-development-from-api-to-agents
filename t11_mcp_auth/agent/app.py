@@ -12,7 +12,7 @@ MCP_API_KEY: str =  "dev-secret-key"
 
 async def main():
 
-    # async with HttpMCPClient(mcp_server_url="http://localhost:8007/mcp",  api_key=MCP_API_KEY) as mcp_client:
+    # async with ApiKeyMCPClient(mcp_server_url="http://localhost:8007/mcp",  api_key=MCP_API_KEY) as mcp_client:
     async with OauthHttpMCPClient(mcp_server_url="http://localhost:8008/mcp") as mcp_client:
 
         print("\n=== Available Tools ===")
