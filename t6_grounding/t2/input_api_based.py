@@ -4,7 +4,7 @@ from typing import Any
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_LUNA_MODEL
 from t6_grounding.user_service_client import UserServiceClient
 
 #TODO:
@@ -84,8 +84,9 @@ def retrieve_context(user_question: str) -> list[dict[str, Any]]:
     #   - {"role": "system", "content": QUERY_ANALYSIS_PROMPT}
     #   - {"role": "user", "content": user_question}
     # 2. Call llm_client.beta.chat.completions.parse with:
-    #   - model='gpt-4.1-nano'
+    #   - model=OPENAI_LUNA_MODEL
     #   - temperature=0.0
+    #   - reasoning_effort="none" (GPT-5.6 accepts a non-default temperature only without reasoning)
     #   - messages=messages
     #   - response_format=SearchRequests
     # 3. Extract search_requests (SearchRequests) from response.choices[0].message.parsed
@@ -117,8 +118,9 @@ def generate_answer(augmented_prompt: str) -> str:
     #   - {"role": "system", "content": SYSTEM_PROMPT}
     #   - {"role": "user", "content": augmented_prompt}
     # 2. Call llm_client.chat.completions.create with:
-    #   - model='gpt-4o-mini'
+    #   - model=OPENAI_LUNA_MODEL
     #   - temperature=0.0
+    #   - reasoning_effort="none" (GPT-5.6 accepts a non-default temperature only without reasoning)
     #   - messages=messages
     # 3. Return response.choices[0].message.content (default to "")
     raise NotImplementedError

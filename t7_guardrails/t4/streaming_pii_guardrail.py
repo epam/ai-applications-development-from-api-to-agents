@@ -4,7 +4,7 @@ from presidio_analyzer import AnalyzerEngine
 from presidio_analyzer.nlp_engine import NlpEngineProvider
 from presidio_anonymizer import AnonymizerEngine
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_LUNA_MODEL
 
 
 class PresidioStreamingPIIGuardrail:
@@ -188,7 +188,7 @@ def main():
     #    - Append user message to messages: {"role": "user", "content": user_input}
     #    - Print "🤖 Assistant: " without newline (end="", flush=True)
     #    - Initialize `full_response = ""`
-    #    - Stream: `for chunk in client.chat.completions.create(model='gpt-4.1-nano', temperature=0.0, messages=messages, stream=True):`
+    #    - Stream: `for chunk in client.chat.completions.create(model=OPENAI_LUNA_MODEL, temperature=0.0, reasoning_effort="none", messages=messages, stream=True):`
     #        - Extract: `content = chunk.choices[0].delta.content`
     #        - If content is not None:
     #            - `safe_chunk = presidio_guardrail.process_chunk(content)`

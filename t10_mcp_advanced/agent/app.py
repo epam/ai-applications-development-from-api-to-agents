@@ -4,6 +4,7 @@ import os
 
 from commons.models.message import Message
 from commons.models.role import Role
+from commons.constants import OPENAI_TERRA_MODEL
 from t10_mcp_advanced.agent.agent import CustomAgentMCP
 from t10_mcp_advanced.agent.clients.custom_mcp_client import CustomMCPClient
 from t10_mcp_advanced.agent.clients.mcp_client import MCPClient
@@ -33,7 +34,7 @@ async def main():
 
     dial_client = CustomAgentMCP(
         api_key=os.getenv("OPENAI_API_KEY"),
-        model="gpt-5.2",
+        model=OPENAI_TERRA_MODEL,
         tools=tools,
         tool_name_client_map=tool_name_client_map
     )

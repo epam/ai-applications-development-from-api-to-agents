@@ -109,7 +109,7 @@ class CustomOpenAIClient(BaseOpenAIClient):
         # 7.2. Otherwise:
         #   - get error text: `error_text = await response.text()`
         #   - print error: f"{response.status} {error_text}"
-        # 8. Return AI message with joined contents: `Message(role=Role.AI, content=''.join(contents))`
+        # 8. Return AI message with joined contents: `Message(role=Role.ASSISTANT, content=''.join(contents))`
         raise NotImplementedError
 
     def _get_content_snippet(self, data: str) -> str:

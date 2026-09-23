@@ -41,7 +41,7 @@ Start with the User Service tools in [task/tools/users/](task/tools/users/). Eac
 - **[update_user_tool.py](task/tools/users/update_user_tool.py)** — update an existing user record
 - **[delete_user_tool.py](task/tools/users/delete_user_tool.py)** — delete a user by ID
 
-Then implement the web search tool in **[task/tools/web_search.py](task/tools/web_search.py)** — it calls the OpenAI Responses API (`gpt-5.2` with `tools: [{"type": "web_search"}]`) and extracts the result from the `output_text` block in the response.
+Then implement the web search tool in **[task/tools/web_search.py](task/tools/web_search.py)** — it calls the OpenAI Responses API (`gpt-5.6-terra` with `tools: [{"type": "web_search"}]`) and extracts the result from the `output_text` block in the response.
 
 ---
 
@@ -124,7 +124,7 @@ See the **Anthropic API Reference** section below for the exact request/response
 ### Request Format
 ```json
 {
-  "model": "gpt-5.2",
+  "model": "gpt-5.6-terra",
   "system": "You are a helpful assistant.",
   "messages": [
     {
@@ -240,7 +240,7 @@ See the **Anthropic API Reference** section below for the exact request/response
 ### Request Format
 ```json
 {
-  "model": "claude-sonnet-4-5",
+  "model": "claude-sonnet-5",
   "max_tokens": 8096,
   "system": "You are a helpful assistant.",
   "messages": [

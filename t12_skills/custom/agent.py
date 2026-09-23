@@ -24,7 +24,8 @@ class T12Agent:
 
     async def _chat_completion(self, messages: list[Message], log_messages: bool = False) -> Message:
         #TODO:
-        # 1. Build `request = {"model": self._model, "messages": [msg.to_dict() for msg in messages], "tools": self._tools_schemas}`
+        # 1. Build `request = {"model": self._model, "messages": [msg.to_dict() for msg in messages], "tools": self._tools_schemas,
+        #    "reasoning_effort": "none"}` (GPT-5.6 supports function tools in Chat Completions only without reasoning)
         # 2. Call `self._client.chat.completions.create(**request)`, assign to `response`
         # 3. Get `choice = response.choices[0]`
         # 4. Create `assistant_msg = Message(role=Role.ASSISTANT, content="")`

@@ -1,5 +1,9 @@
 from t2_llms_output_tuning._clients.anthropic_client import AnthropicAIClient
 from t2_llms_output_tuning._main import run
+from commons.constants import ANTHROPIC_HAIKU_MODEL
+
+# ⚠️ Note: this task uses Claude Haiku 4.5. Claude Sonnet 5 rejects a non-default temperature/top_p/top_k and
+#  `budget_tokens` thinking (400 error). Claude 4.x models accept only one of temperature/top_p per request
 
 # TODO 1: temperature — controls randomness. Range: 0.0-1.0, default: 1.0
 #  Lower = more deterministic, higher = more creative
@@ -30,7 +34,7 @@ from t2_llms_output_tuning._main import run
 #  Try: thinking={"type": "enabled", "budget_tokens": 5000}, max_tokens=8000
 
 run(
-    client=AnthropicAIClient('claude-sonnet-4-5'),
+    client=AnthropicAIClient(ANTHROPIC_HAIKU_MODEL),
     print_request=True, # Switch to False if you do not want to see the request in console
     print_only_content=False, # Switch to True if you want to see only content from response
 

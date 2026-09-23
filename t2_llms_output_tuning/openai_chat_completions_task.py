@@ -1,5 +1,6 @@
 from t2_llms_output_tuning._clients.openai_chat_completions_client import OpenAIChatCompletionsClient
 from t2_llms_output_tuning._main import run
+from commons.constants import OPENAI_TERRA_MODEL
 
 # TODO 1: n — number of completions to generate per request. Default: 1
 #  ⚠️ Note: NOT available in Responses API
@@ -10,12 +11,14 @@ from t2_llms_output_tuning._main import run
 #  Lower = more deterministic, higher = more creative
 #  Query: "Why white is white?"
 #  Try: temperature=0.0 vs temperature=2.0, compare outputs
+#  ⚠️ Note: GPT-5.6 accepts a non-default temperature only with reasoning_effort="none"
 #  ⚠️ Note: it is okay that after temperature=1.5 you get some odd characters in output 😅
 
 # TODO 3: top_p — nucleus sampling, keeps tokens within cumulative probability. Range: 0.0-1.0, default: 1.0
 #  Lower = fewer token choices, more focused output
 #  Query: "List 5 alternative uses for a paperclip"
 #  Try: top_p=0.1 vs top_p=0.9
+#  ⚠️ Note: GPT-5.6 accepts top_p only with reasoning_effort="none"
 
 # TODO 4: max_tokens — max number of tokens in the response. Default: model-dependent
 #  ⚠️ Note: Will work for models like gpt-4o. For gpt-5+ - `max_completion_tokens`.
@@ -49,14 +52,14 @@ from t2_llms_output_tuning._main import run
 #  Query: "Give me a name for a coffee shop"
 #  Try: seed=42 — run twice with the same seed and compare outputs
 
-# TODO 10: reasoning_effort — controls how much thinking the model does. Values: "low", "medium", "high" (default)
+# TODO 10: reasoning_effort — controls how much thinking the model does. Values: "none", "low", "medium" (default), "high", "xhigh"
 #  Lower effort = faster, cheaper responses; higher = more thorough reasoning
-#  ⚠️ Note: does NOT work with non-default temperature (must omit temperature or set to 1.0)
+#  ⚠️ Note: non-default temperature/top_p work only with reasoning_effort="none"
 #  Query: "How many r's are in the word strawberry?"
 #  Try: reasoning_effort="low" vs reasoning_effort="high"
 
 run(
-    client=OpenAIChatCompletionsClient(model_name='gpt-5.2'),
+    client=OpenAIChatCompletionsClient(model_name=OPENAI_TERRA_MODEL),
     print_request=True, # Switch to False if you do not want to see the request in console
     print_only_content=False, # Switch to True if you want to see only content from response
 

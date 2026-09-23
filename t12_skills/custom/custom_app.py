@@ -4,7 +4,7 @@ from pathlib import Path
 
 from openai import OpenAI
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_TERRA_MODEL
 from commons.models.message import Message
 from commons.models.role import Role
 from t12_skills.custom.agent import T12Agent
@@ -57,7 +57,7 @@ async def main():
     #    print f"📄 System prompt: \n {system_prompt}"
     # 5. Create `messages: list[Message] = [Message(role=Role.SYSTEM, content=system_prompt)]`
     # 6. Create `tools: list[BaseTool] = [ReadSkillTool(skills_dir=SKILLS_DIR), await PythonCodeInterpreterTool.create(mcp_url=MCP_URL, tool_name=MCP_TOOL_NAME, skills_dir=SKILLS_DIR)]`
-    # 7. Create `agent = T12Agent(client=OpenAI(api_key=OPENAI_API_KEY), model="gpt-5.2", tools=tools)`
+    # 7. Create `agent = T12Agent(client=OpenAI(api_key=OPENAI_API_KEY), model=OPENAI_TERRA_MODEL, tools=tools)`
     # 8. Start while True loop: read input with `input("➡️: ").strip()`, break on "exit",
     #    append `Message(role=Role.USER, content=user_input)` to `messages`,
     #    await `agent.chat_completion(messages=messages, log_messages=True)`, assign to `assistant_message`,

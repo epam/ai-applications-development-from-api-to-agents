@@ -1,7 +1,7 @@
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_LUNA_MODEL
 
 SYSTEM_PROMPT = "You are a secure colleague directory assistant designed to help users find contact information for business purposes."
 
@@ -52,8 +52,9 @@ class Validation(BaseModel):
 def validate(user_input: str) -> Validation:
     #TODO:
     # 1. Call `client.beta.chat.completions.parse(...)` with:
-    #    - model='gpt-4.1-nano'
+    #    - model=OPENAI_LUNA_MODEL
     #    - temperature=0.0
+    #    - reasoning_effort="none" (GPT-5.6 accepts a non-default temperature only without reasoning)
     #    - messages=[{"role": "system", "content": VALIDATION_PROMPT}, {"role": "user", "content": user_input}]
     #    - response_format=Validation
     # 2. Return `response.choices[0].message.parsed`
@@ -75,7 +76,7 @@ def main():
     #    - Call `validate(user_input)` to get a Validation object
     #    - If validation.valid is True:
     #        - Append user message to messages: {"role": "user", "content": user_input}
-    #        - Call `client.chat.completions.create(model='gpt-4.1-nano', temperature=0.0, messages=messages)`
+    #        - Call `client.chat.completions.create(model=OPENAI_LUNA_MODEL, temperature=0.0, reasoning_effort="none", messages=messages)`
     #        - Extract content: `ai_content = response.choices[0].message.content`
     #        - Append assistant message to messages: {"role": "assistant", "content": ai_content}
     #        - Print f"🤖Response:\n{ai_content}"

@@ -8,7 +8,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import SecretStr
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_EMBEDDINGS_MODEL, OPENAI_TERRA_MODEL
 
 _SYSTEM_PROMPT = """You are a RAG-powered assistant that assists users with their questions about microwave usage.
             
@@ -170,12 +170,13 @@ main(
         # TODO:
         #  1. pass embeddings:
         #       OpenAIEmbeddings
-        #       - model='text-embedding-3-small'
+        #       - model=OPENAI_EMBEDDINGS_MODEL
         #       - api_key=SecretStr(OPENAI_API_KEY)
         #  2. pass llm_client:
         #       ChatOpenAI
         #       - temperature=0.0
-        #       - model='gpt-4o'
+        #       - reasoning_effort="none" (GPT-5.6 accepts a non-default temperature only without reasoning)
+        #       - model=OPENAI_TERRA_MODEL
         #       - api_key=SecretStr(OPENAI_API_KEY)
     )
 )

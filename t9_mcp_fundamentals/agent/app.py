@@ -7,7 +7,7 @@ from pathlib import Path
 from mcp import Resource
 from mcp.types import Prompt
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_TERRA_MODEL
 from commons.models.message import Message
 from commons.models.role import Role
 from t9_mcp_fundamentals.agent.agent import AgentMCPFundamentals
@@ -27,7 +27,7 @@ async def main():
     #    iterate and print each resource
     # 3. Print "\n=== Available Tools ===" and fetch tools via `mcp_client.get_tools()`,
     #    iterate and print each tool with `json.dumps(tool, indent=2)`
-    # 4. Create `AgentMCPFundamentals` with api_key=OPENAI_API_KEY, model="gpt-5.2", tools=tools,
+    # 4. Create `AgentMCPFundamentals` with api_key=OPENAI_API_KEY, model=OPENAI_TERRA_MODEL, tools=tools,
     #    mcp_client=mcp_client and assign it to `agent`
     # 5. Create `messages` list with a single system Message(role=Role.SYSTEM, content=SYSTEM_PROMPT)
     # 6. Print "\n=== Available Prompts ===" and fetch prompts via `mcp_client.get_prompts()`.

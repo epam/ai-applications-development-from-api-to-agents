@@ -1,6 +1,6 @@
 import base64
 
-from commons.constants import OPENAI_HOST
+from commons.constants import OPENAI_HOST, OPENAI_TERRA_MODEL
 from t3_content_generation._openai_client import OpenAIClientT3
 
 
@@ -27,7 +27,7 @@ def main(model_name: str, img_urls: list[str], request: str = "What's in this im
 
 main(
     #TODO:
-    # - model_name gpt-4o-mini
+    # - model_name OPENAI_TERRA_MODEL
     # - img_urls:
     #   - https://a-z-animals.com/media/2019/11/Elephant-male-1024x535.jpg
     #   or

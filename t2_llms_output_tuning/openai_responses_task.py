@@ -1,5 +1,6 @@
 from t2_llms_output_tuning._clients.openai_responses_client import OpenAIResponsesClient
 from t2_llms_output_tuning._main import run
+from commons.constants import OPENAI_TERRA_MODEL
 
 # Responses API differences from Chat Completions:
 #  - "messages" -> "input", "system" message -> "instructions" param
@@ -12,10 +13,12 @@ from t2_llms_output_tuning._main import run
 # TODO 1: temperature — controls randomness. Range: 0.0-2.0, default: 1.0
 #  Query: "Give me a name for a coffee shop"
 #  Try: temperature=0.0 vs temperature=2.0, compare outputs
+#  ⚠️ Note: GPT-5.6 accepts a non-default temperature only with reasoning={"effort": "none"}
 
 # TODO 2: top_p — nucleus sampling. Range: 0.0-1.0, default: 1.0
 #  Query: "List 5 alternative uses for a paperclip"
 #  Try: top_p=0.1 vs top_p=0.9
+#  ⚠️ Note: GPT-5.6 accepts top_p only with reasoning={"effort": "none"}
 
 # TODO 3: max_output_tokens — max tokens in response (was "max_tokens" in Chat Completions)
 #  Query: "Explain quantum computing"
@@ -35,12 +38,12 @@ from t2_llms_output_tuning._main import run
 #  Try: metadata={"project": "demo", "user": "student-1"}
 
 # TODO 7: reasoning — extended thinking config (replaces "reasoning_effort" from Chat Completions)
-#  ⚠️ Note: does NOT work with non-default temperature
+#  ⚠️ Note: non-default temperature/top_p work only with reasoning={"effort": "none"}
 #  Query: "How many r's are in the word strawberry?"
 #  Try: reasoning={"effort": "high"} vs reasoning={"effort": "low"}
 
 run(
-    client=OpenAIResponsesClient('gpt-5.2'),
+    client=OpenAIResponsesClient(OPENAI_TERRA_MODEL),
     print_request=True, # Switch to False if you do not want to see the request in console
     print_only_content=False, # Switch to True if you want to see only content from response
 

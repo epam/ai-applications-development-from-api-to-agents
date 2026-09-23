@@ -1,4 +1,4 @@
-from commons.constants import OPENAI_API_KEY, ANTHROPIC_API_KEY
+from commons.constants import OPENAI_API_KEY, ANTHROPIC_API_KEY, OPENAI_TERRA_MODEL
 from commons.models.conversation import Conversation
 from commons.models.message import Message
 from commons.models.role import Role
@@ -19,7 +19,7 @@ def main():
     #TODO:
     # 1. Create UserClient
     # 2. Create tools (WebSearchTool, GetUserByIdTool, SearchUsersTool, CreateUserTool, UpdateUserTool, DeleteUserTool)
-    # 3. Create OpenAIClient with all tools and SYSTEM_PROMPT, as model can use gpt-5.2
+    # 3. Create OpenAIClient with all tools and SYSTEM_PROMPT, as model can use OPENAI_TERRA_MODEL
     # 4.. Create Conversation
 
     print("Type your question or 'exit' to quit.")

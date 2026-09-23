@@ -41,6 +41,7 @@ class UMSAgent:
         #TODO:
         # 1. Build `request_data` dict with keys `model`, `messages` (each converted via `.to_dict()`),
         #    `tools` (use `self._tools_schemas`), and `stream=False`
+        #    (if you use a GPT-5.6 model, also add `reasoning_effort="none"`: it supports function tools in Chat Completions only without reasoning)
         # 2. Call `await self.async_openai.chat.completions.create(**request_data)` and store as `response`
         # 3. Build `ai_message = Message(role=Role.ASSISTANT, content=response.choices[0].message.content)`
         # 4. If `response.choices[0].message.tool_calls` is present, assign it to `ai_message.tool_calls`

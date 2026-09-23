@@ -25,7 +25,7 @@ class OpenAIResponsesClient(BaseOpenAIClient):
 
         Args:
             endpoint (str): The OpenAI API endpoint (for compatibility, not used by SDK).
-            model_name (str): The OpenAI model to use (e.g., 'gpt-5').
+            model_name (str): The OpenAI model to use (e.g., 'gpt-5.6-terra').
             system_prompt (str): The instruction to guide the model's behavior.
             api_key (str): The OpenAI API key for authentication.
         """

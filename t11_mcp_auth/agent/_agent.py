@@ -39,6 +39,7 @@ class AgentMCPAuth:
                 "messages": [msg.to_dict() for msg in messages],
                 "tools": self.tools,
                 "temperature": 0.0,
+                "reasoning_effort": "none",  # GPT-5.6 supports a non-default temperature and function tools in Chat Completions only without reasoning
                 "stream": True
             }
         )

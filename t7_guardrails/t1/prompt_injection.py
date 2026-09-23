@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_LUNA_MODEL
 
 SYSTEM_PROMPT = """You are a secure colleague directory assistant designed to help users find contact information for business purposes.
 
@@ -33,7 +33,7 @@ def main():
     #    - Get stripped user input: `user_input = input("> ").strip()`
     #    - If user_input.lower() == "exit": print "Exiting the chat. Goodbye!" and break
     #    - Append user message to messages: {"role": "user", "content": user_input}
-    #    - Call `client.chat.completions.create(model='gpt-4.1-nano', temperature=0.0, messages=messages)`
+    #    - Call `client.chat.completions.create(model=OPENAI_LUNA_MODEL, temperature=0.0, reasoning_effort="none", messages=messages)`
     #    - Extract content: `ai_content = response.choices[0].message.content`
     #    - Append assistant message to messages: {"role": "assistant", "content": ai_content}
     #    - Print f"🤖Response:\n{ai_content}\n{'='*100}"

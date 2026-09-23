@@ -2,7 +2,7 @@ from typing import Any
 
 import requests
 
-from commons.constants import OPENAI_RESPONSES_ENDPOINT
+from commons.constants import OPENAI_RESPONSES_ENDPOINT, OPENAI_TERRA_MODEL
 from t8_agent.task.tools.base import BaseTool
 
 
@@ -32,7 +32,7 @@ class WebSearchTool(BaseTool):
         # https://developers.openai.com/api/docs/guides/tools-web-search
         # 1. Create `headers` dict: "Authorization": self.__api_key, "Content-Type": "application/json"
         # 2. Create `request_data` dict with:
-        #    - "model": "gpt-5.2"
+        #    - "model": OPENAI_TERRA_MODEL
         #    - "tools": [{"type": "web_search"}]
         #    - "input": str(arguments["request"])
         # 3. Make POST call with `requests` lib: `url=self.__endpoint, headers=headers, json=request_data`

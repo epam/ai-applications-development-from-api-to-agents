@@ -6,7 +6,7 @@ from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from openai import OpenAI
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_EMBEDDINGS_MODEL, OPENAI_LUNA_MODEL
 from t6_grounding.user_service_client import UserServiceClient
 
 #TODO:
@@ -102,8 +102,9 @@ class UserRAG:
         #   - {"role": "system", "content": SYSTEM_PROMPT}
         #   - {"role": "user", "content": augmented_prompt}
         # 2. Call self._llm_client.chat.completions.create with:
-        #   - model='gpt-4o-mini'
+        #   - model=OPENAI_LUNA_MODEL
         #   - temperature=0.0
+        #   - reasoning_effort="none" (GPT-5.6 accepts a non-default temperature only without reasoning)
         #   - messages=messages
         # 3. Return response.choices[0].message.content (default to "")
         raise NotImplementedError
@@ -112,7 +113,7 @@ class UserRAG:
 async def main():
     #TODO:
     # 1. Create OpenAIEmbeddings with:
-    #   - model='text-embedding-3-small'
+    #   - model=OPENAI_EMBEDDINGS_MODEL
     #   - api_key=OPENAI_API_KEY
     #   - dimensions=384
     # 2. Use UserRAG(embeddings) as an async context manager (async with ... as rag):

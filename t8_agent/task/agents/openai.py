@@ -31,7 +31,8 @@ class OpenAIBasedAgent(BaseAgent):
         # 1. Build request_messages: if self._system_prompt is set, prepend
         #    Message(role=Role.SYSTEM, content=self._system_prompt) to messages, otherwise use messages as-is
         # 2. Build headers dict with "Authorization" (self._api_key) and "Content-Type"
-        # 3. Build request_data dict with "model", "messages" (call .to_dict() on each), "tools"
+        # 3. Build request_data dict with "model", "messages" (call .to_dict() on each), "tools",
+        #    "reasoning_effort": "none" (GPT-5.6 supports function tools in Chat Completions only without reasoning)
         # 4. If print_request: print endpoint and REQUEST messages
         # 5. POST to self._endpoint with headers and json=request_data using requests
         # 6. If status_code == 200:

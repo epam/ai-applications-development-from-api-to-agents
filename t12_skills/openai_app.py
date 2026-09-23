@@ -6,7 +6,7 @@ from pathlib import Path
 from openai import OpenAI
 from openai.types.responses import ResponseFunctionShellToolCall
 
-from commons.constants import OPENAI_API_KEY
+from commons.constants import OPENAI_API_KEY, OPENAI_TERRA_MODEL
 
 
 def zip_skill(skill_dir: Path) -> bytes:
@@ -39,7 +39,7 @@ def chat(client: OpenAI, skill_id: str, log_request: bool = True, log_response: 
     #       b. Build `environment` dict:
     #          {"type": "container_auto", "skills": [{"type": "skill_reference", "skill_id": skill_id}]}
     #       c. Build `request_payload` with:
-    #          model="gpt-5.2", input=[{"role": "user", "content": user_input}],
+    #          model=OPENAI_TERRA_MODEL, input=[{"role": "user", "content": user_input}],
     #          tools=[{"type": "shell", "environment": environment}]
     #       d. If `previous_response_id` is set, add it to `request_payload`
     #       e. If `log_request`, print "\n--- REQUEST ---", the JSON payload with `json.dumps(..., indent=2, default=str)`,
