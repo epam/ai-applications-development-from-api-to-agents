@@ -23,14 +23,13 @@ async def main():
     tools: list[dict] = []
     tool_name_client_map: dict[str, MCPClient | CustomMCPClient] = {}
 
-    #TODO:
-    # Test it later with implemented CustomMCPClient
-
     ums_mcp_client = await MCPClient.create("http://localhost:8006/mcp")
     await _collect_tools(ums_mcp_client, tools, tool_name_client_map)
 
-    fetch_mcp_client = await CustomMCPClient.create("https://remote.mcpservers.org/fetch/mcp")
-    await _collect_tools(fetch_mcp_client, tools, tool_name_client_map)
+    #TODO:
+    # Test it later with implemented CustomMCPClient: replace `MCPClient` with `CustomMCPClient` for `ddg_mcp_client`
+    ddg_mcp_client = await MCPClient.create("http://localhost:8010/mcp")
+    await _collect_tools(ddg_mcp_client, tools, tool_name_client_map)
 
     dial_client = CustomAgentMCP(
         api_key=os.getenv("OPENAI_API_KEY"),
@@ -47,20 +46,24 @@ async def main():
     ]
 
     print("MCP-based Agent is ready! Type your query or 'exit' to exit.")
-    while True:
-        user_input = input("\n> ").strip()
-        if user_input.lower() == 'exit':
-            break
+    try:
+        while True:
+            user_input = input("\n> ").strip()
+            if user_input.lower() == 'exit':
+                break
 
-        messages.append(
-            Message(
-                role=Role.USER,
-                content=user_input
+            messages.append(
+                Message(
+                    role=Role.USER,
+                    content=user_input
+                )
             )
-        )
 
-        ai_message: Message = await dial_client.get_completion(messages)
-        messages.append(ai_message)
+            ai_message: Message = await dial_client.get_completion(messages)
+            messages.append(ai_message)
+    finally:
+        await ums_mcp_client.close()
+        await ddg_mcp_client.close()
 
 
 if __name__ == "__main__":
