@@ -16,9 +16,6 @@ from t9_mcp_fundamentals.agent.mcp_clients.stdio import StdioMCPClient
 from t9_mcp_fundamentals.agent.prompts import SYSTEM_PROMPT
 
 
-# https://remote.mcpservers.org/fetch/mcp
-# Pay attention that `fetch` doesn't have resources and prompts
-
 PROJECT_ROOT = Path(__file__).parent.parent.parent  # .../ai-applications-development-from-api-to-agents
 STDIO_SERVER_PATH = PROJECT_ROOT / "t9_mcp_fundamentals" / "mcp_server" / "stdio_server.py"
 

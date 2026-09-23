@@ -26,7 +26,7 @@ Service.
 
 ### 1. Create and run HTTP MCP server:
 
-1. Run User Service [root docker-compose](docker-compose.yml) (Optional step in case if you have it from previous tasks)
+1. Run [docker-compose](docker-compose.yml) (`docker compose up -d`). It starts the User Service and the `ddg-mcp-server` (MCP server with WEB Search capabilities, available at http://localhost:8010/mcp)
 2. Open [_server.py](mcp_server/_server.py) and implement all ***TODO***
 3. Open [http_server.py](mcp_server/http_server.py) and **Run** it
 
@@ -45,13 +45,13 @@ Service.
 4. Open [prompts](agent/prompts.py) and write System prompt
 5. Open [app](agent/app.py) and implement all ***TODO***
 6. Run application [app.py](agent/app.py) and test that it is connecting to MCP Server and works properly
-7. Try with your solution with `fetch MCP` `https://remote.mcpservers.org/fetch/mcp` instead of http://localhost:8005/mcp
+7. Try your solution with `ddg-mcp-server` http://localhost:8010/mcp (from [docker-compose](docker-compose.yml)) instead of http://localhost:8005/mcp
 
-### OPTIONAL: Support both (users-management and fetch) MCP servers:
+### OPTIONAL: Support both (users-management and ddg-mcp-server) MCP servers:
 
 1. Remember that we have 1-to-1 connection between MCP client and MCP server!
 2. You need to think of the way how to change current flow to support tools from different MCP servers and implement it
-3. In the end you should have the Agent that is able to fetch the info from the WEB about some people and save it to
+3. In the end you should have the Agent that is able to search the info in the WEB about some people and save it to
    Users Service
 4. Hint: the problem place is [agent](agent/agent.py)
 
