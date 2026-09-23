@@ -1,5 +1,7 @@
+import base64
 import json
 from typing import Optional
+from urllib.parse import urlparse
 
 import uvicorn
 from fastapi import FastAPI, Header
@@ -8,13 +10,26 @@ from fastapi.responses import StreamingResponse
 
 from models.request import MCPRequest
 from t10_mcp_advanced.mcp_server.models.response import MCPResponse, ErrorResponse
-from t10_mcp_advanced.mcp_server.ums_mcp_server import UmsMCPServer
+from t10_mcp_advanced.mcp_server.ums_mcp_server import UmsMCPServer, PROTOCOL_VERSION_META_KEY
 
-MCP_SESSION_ID_HEADER = "Mcp-Session-Id"
+# Streamable HTTP request headers (https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
+MCP_PROTOCOL_VERSION_HEADER = "MCP-Protocol-Version"
+MCP_METHOD_HEADER = "Mcp-Method"
+MCP_NAME_HEADER = "Mcp-Name"
+
+HEADER_MISMATCH_ERROR_CODE = -32020
+ALLOWED_ORIGIN_HOSTS = {"localhost", "127.0.0.1"}
 
 # FastAPI app
 app = FastAPI(title="MCP Tools Server", version="1.0.0")
 mcp_server = UmsMCPServer()
+
+
+def _validate_origin(origin: Optional[str]) -> bool:
+    """Protect against DNS rebinding: requests from a browser must come from a local origin"""
+    if not origin:
+        return True
+    return urlparse(origin).hostname in ALLOWED_ORIGIN_HOSTS
 
 
 def _validate_accept_header(accept_header: Optional[str]) -> bool:
@@ -29,113 +44,121 @@ def _validate_accept_header(accept_header: Optional[str]) -> bool:
     return has_json and has_sse
 
 
+def _decode_header_value(value: str) -> str:
+    """Values that are not plain ASCII are sent as `=?base64?{value}?=`"""
+    if value.startswith("=?base64?") and value.endswith("?="):
+        return base64.b64decode(value[len("=?base64?"):-len("?=")]).decode("utf-8")
+    return value
+
+
+def _validate_request_headers(
+        request: MCPRequest,
+        protocol_version: Optional[str],
+        mcp_method: Optional[str],
+        mcp_name: Optional[str]
+) -> Optional[str]:
+    """Headers mirror the request body so that proxies can route without parsing it. They must match the body"""
+    body_protocol_version = request.params["_meta"][PROTOCOL_VERSION_META_KEY]
+    if protocol_version != body_protocol_version:
+        return (f"{MCP_PROTOCOL_VERSION_HEADER} header value '{protocol_version}' "
+                f"does not match body value '{body_protocol_version}'")
+
+    if mcp_method != request.method:
+        return f"{MCP_METHOD_HEADER} header value '{mcp_method}' does not match body value '{request.method}'"
+
+    if request.method == "tools/call":
+        body_name = request.params.get("name")
+        try:
+            header_name = _decode_header_value(mcp_name) if mcp_name else None
+        except ValueError:
+            return f"{MCP_NAME_HEADER} header value '{mcp_name}' is not valid base64"
+        if header_name != body_name:
+            return f"{MCP_NAME_HEADER} header value '{header_name}' does not match body value '{body_name}'"
+
+    return None
+
+
+def _json_error_response(status_code: int, mcp_response: MCPResponse) -> Response:
+    return Response(
+        status_code=status_code,
+        content=mcp_response.model_dump_json(exclude_none=True),
+        media_type="application/json"
+    )
+
+
 async def _create_sse_stream(messages: list):
     """Create Server-Sent Events stream for responses"""
     for message in messages:
-        print(messages)
-        event_data = f"data: {json.dumps(message.dict(exclude_none=True))}\n\n"
+        event_data = f"event: message\ndata: {json.dumps(message.model_dump(exclude_none=True))}\n\n"
         yield event_data.encode('utf-8')
-
-    yield b"data: [DONE]\n\n"
 
 
 @app.post("/mcp")
 async def handle_mcp_request(
         request: MCPRequest,
-        response: Response,
         accept: Optional[str] = Header(None),
-        mcp_session_id: Optional[str] = Header(None, alias=MCP_SESSION_ID_HEADER)
+        origin: Optional[str] = Header(None),
+        protocol_version: Optional[str] = Header(None, alias=MCP_PROTOCOL_VERSION_HEADER),
+        mcp_method: Optional[str] = Header(None, alias=MCP_METHOD_HEADER),
+        mcp_name: Optional[str] = Header(None, alias=MCP_NAME_HEADER)
 ):
-    """Single MCP endpoint handling all JSON-RPC requests with proper session management"""
-    # Validate Accept header for all requests
+    """Single stateless MCP endpoint: every request is validated and processed on its own"""
+    if not _validate_origin(origin):
+        return _json_error_response(
+            status_code=403,
+            mcp_response=MCPResponse(error=ErrorResponse(code=-32600, message=f"Origin '{origin}' is not allowed"))
+        )
+
     if not _validate_accept_header(accept):
-        error_response = MCPResponse(
-            id="server-error",
-            error=ErrorResponse(
-                code=-32600,
-                message="Client must accept both application/json and text/event-stream"
-            )
-        )
-        return Response(
+        return _json_error_response(
             status_code=406,
-            content=error_response.model_dump_json(),
-            media_type="application/json"
-        )
-
-    # Handle initialization (no session required)
-    if request.method == "initialize":
-        mcp_response, session_id = mcp_server.handle_initialize(request)
-
-        if session_id:
-            response.headers[MCP_SESSION_ID_HEADER] = session_id
-            mcp_session_id = session_id
-    else:
-        # Validate Mcp-Session-Id header presence
-        if not mcp_session_id:
-            error_response = MCPResponse(
-                id="server-error",
-                error=ErrorResponse(
-                    code=-32600,
-                    message="Missing session ID"
-                )
-            )
-            return Response(
-                status_code=400,
-                content=error_response.model_dump_json(),
-                media_type="application/json"
-            )
-
-        session = mcp_server.get_session(mcp_session_id)
-        if not session:
-            return Response(
-                status_code=400,
-                content="No valid session ID provided"
-            )
-
-        # Handle notifications that don't need responses
-        if request.method == "notifications/initialized":
-            session.ready_for_operation = True
-            print("Client initialization complete")
-            return Response(
-                status_code=202,
-                headers={MCP_SESSION_ID_HEADER: session.session_id},
-            )
-
-        # Handle different MCP methods
-        if not session.ready_for_operation:
-            error_response = MCPResponse(
-                id="server-error",
-                error=ErrorResponse(
-                    code=-32600,
-                    message="Missing session ID"
-                )
-            )
-            return Response(
-                status_code=400,
-                content=error_response.model_dump_json(),
-                media_type="application/json"
-            )
-
-        if request.method == "tools/list":
-            mcp_response = mcp_server.handle_tools_list(request)
-        elif request.method == "tools/call":
-            mcp_response = await mcp_server.handle_tools_call(request)
-        else:
-            mcp_response = MCPResponse(
+            mcp_response=MCPResponse(
                 id=request.id,
                 error=ErrorResponse(
-                    code=-32602,
-                    message=f"Method '{request.method}' not found"
+                    code=-32600,
+                    message="Client must accept both application/json and text/event-stream"
                 )
             )
+        )
+
+    # Notifications (no `id`) don't get a response
+    if request.id is None:
+        return Response(status_code=202)
+
+    # Legacy clients start with the `initialize` handshake that was removed in 2026-07-28
+    if request.method == "initialize":
+        return _json_error_response(status_code=400, mcp_response=mcp_server.handle_legacy_initialize(request))
+
+    if error_response := mcp_server.validate_request_meta(request):
+        return _json_error_response(status_code=400, mcp_response=error_response)
+
+    if mismatch := _validate_request_headers(request, protocol_version, mcp_method, mcp_name):
+        return _json_error_response(
+            status_code=400,
+            mcp_response=MCPResponse(id=request.id, error=ErrorResponse(code=HEADER_MISMATCH_ERROR_CODE, message=mismatch))
+        )
+
+    if request.method == "server/discover":
+        mcp_response = mcp_server.handle_discover(request)
+    elif request.method == "tools/list":
+        mcp_response = mcp_server.handle_tools_list(request)
+    elif request.method == "tools/call":
+        mcp_response = await mcp_server.handle_tools_call(request)
+    else:
+        return _json_error_response(
+            status_code=404,
+            mcp_response=MCPResponse(
+                id=request.id,
+                error=ErrorResponse(code=-32601, message=f"Method '{request.method}' not found")
+            )
+        )
 
     return StreamingResponse(
         content=_create_sse_stream([mcp_response]),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            MCP_SESSION_ID_HEADER: mcp_session_id
+            "X-Accel-Buffering": "no"
         }
     )
 

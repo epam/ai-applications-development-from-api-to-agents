@@ -18,3 +18,12 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  ddg-mcp-server:
+    depends_on:
+      - userservice
+    image: khshanovskyi/ddg-mcp-server:latest
+    ports:
+      - "8010:8000"
+    environment:
+      - MCP_TRANSPORT=streamable-http

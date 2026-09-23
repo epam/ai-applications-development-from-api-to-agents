@@ -7,49 +7,7 @@
   },
   "item": [
     {
-      "name": "init",
-      "protocolProfileBehavior": {
-        "disabledSystemHeaders": {
-          "accept": true
-        }
-      },
-      "request": {
-        "auth": {
-          "type": "noauth"
-        },
-        "method": "POST",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json,text/event-stream",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"id\": 1,\n    \"method\": \"initialize\",\n    \"params\": {\n        \"protocolVersion\": \"2025-11-25\",\n        \"capabilities\": {\n            \"roots\": {\n                \"listChanged\": true\n            },\n            \"sampling\": {}\n        },\n        \"clientInfo\": {\n            \"name\": \"test-client\",\n            \"version\": \"1.0.0\"\n        }\n    }\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "http://localhost:8006/mcp",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8006",
-          "path": [
-            "mcp"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "init-notification",
+      "name": "server/discover",
       "protocolProfileBehavior": {
         "disabledSystemHeaders": {
           "accept": true
@@ -67,14 +25,19 @@
             "type": "text"
           },
           {
-            "key": "mcp-session-id",
-            "value": "SESSION_ID_FROM_RESP_HEADER_ON_INITIALIZE",
+            "key": "MCP-Protocol-Version",
+            "value": "2026-07-28",
+            "type": "text"
+          },
+          {
+            "key": "Mcp-Method",
+            "value": "server/discover",
             "type": "text"
           }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"notifications/initialized\"\n}",
+          "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"id\": 1,\n    \"method\": \"server/discover\",\n    \"params\": {\n        \"_meta\": {\n            \"io.modelcontextprotocol/protocolVersion\": \"2026-07-28\",\n            \"io.modelcontextprotocol/clientInfo\": {\n                \"name\": \"postman\",\n                \"version\": \"1.0.0\"\n            },\n            \"io.modelcontextprotocol/clientCapabilities\": {}\n        }\n    }\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -114,14 +77,19 @@
             "type": "text"
           },
           {
-            "key": "mcp-session-id",
-            "value": "SESSION_ID_FROM_RESP_HEADER_ON_INITIALIZE",
+            "key": "MCP-Protocol-Version",
+            "value": "2026-07-28",
+            "type": "text"
+          },
+          {
+            "key": "Mcp-Method",
+            "value": "tools/list",
             "type": "text"
           }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"id\": 1,\n    \"method\": \"tools/list\"\n}",
+          "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"id\": 2,\n    \"method\": \"tools/list\",\n    \"params\": {\n        \"_meta\": {\n            \"io.modelcontextprotocol/protocolVersion\": \"2026-07-28\",\n            \"io.modelcontextprotocol/clientInfo\": {\n                \"name\": \"postman\",\n                \"version\": \"1.0.0\"\n            },\n            \"io.modelcontextprotocol/clientCapabilities\": {}\n        }\n    }\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -161,14 +129,24 @@
             "type": "text"
           },
           {
-            "key": "mcp-session-id",
-            "value": "SESSION_ID_FROM_RESP_HEADER_ON_INITIALIZE",
+            "key": "MCP-Protocol-Version",
+            "value": "2026-07-28",
+            "type": "text"
+          },
+          {
+            "key": "Mcp-Method",
+            "value": "tools/call",
+            "type": "text"
+          },
+          {
+            "key": "Mcp-Name",
+            "value": "get_user_by_id",
             "type": "text"
           }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"id\": 1,\n    \"method\": \"tools/call\",\n    \"params\": {\n        \"name\": \"get_user_by_id\",\n        \"arguments\": {\n            \"id\": 999\n        }\n    }\n}",
+          "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"id\": 3,\n    \"method\": \"tools/call\",\n    \"params\": {\n        \"name\": \"get_user_by_id\",\n        \"arguments\": {\n            \"id\": 999\n        },\n        \"_meta\": {\n            \"io.modelcontextprotocol/protocolVersion\": \"2026-07-28\",\n            \"io.modelcontextprotocol/clientInfo\": {\n                \"name\": \"postman\",\n                \"version\": \"1.0.0\"\n            },\n            \"io.modelcontextprotocol/clientCapabilities\": {}\n        }\n    }\n}",
           "options": {
             "raw": {
               "language": "json"
